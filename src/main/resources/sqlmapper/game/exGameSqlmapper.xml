@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.ExGameDao">
+    <insert id="insert">
+       insert into exgames(
+    teamid,exclass,oppoteam,
+	exgamedate,location,weather,
+	fw,mf,df,
+	org,passing,fig,
+	fhwrecord,fhorecord,shwrecord,shorecord,
+    result,formation,description,
+    creationdate,
+    fw_description,mf_description,df_description,
+    objectpoint,youtubesource,setplay,shooting,sptrid,lastupdatedate,scheduleflag
+) values (
+    #{teamid},#{exclass},#{oppoteam},
+	#{exgamedate},#{location},#{weather},
+	#{fw},#{mf},#{df},
+    #{org},#{passing},#{fig},
+    #{fhwrecord},#{fhorecord},#{shwrecord},#{shorecord},
+    #{result},#{formation},#{description},
+    now(),
+    #{fw_description},#{mf_description},#{df_description},
+    #{objectpoint},#{youtubesource},#{setplay},#{shooting},#{sptrid},now(),#{scheduleflag}
+);
+        <selectKey keyProperty="exgameid" resultType="Integer" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+
+    <update id="update" parameterType="com.jui.stm.vo.ExGameVo">
+        update exgames
+        <set>
+            <if test="oppoteam != null">oppoteam = #{oppoteam},</if>
+            <if test="exgamedate != null">exgamedate    = #{exgamedate},</if>
+            <if test="exclass != null">exclass = #{exclass},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="weather != null">weather = #{weather},</if>
+
+            <if test="fw != null">fw = #{fw},</if>
+            <if test="mf != null">mf = #{mf},</if>
+            <if test="df != null">df = #{df},</if>
+            <if test="org != null">org = #{org},</if>
+            <if test="passing != null">passing = #{passing},</if>
+
+            <if test="fig != null">fig = #{fig},</if>
+            <if test="shooting != null">shooting = #{shooting},</if>
+            <if test="passing != null">passing = #{passing},</if>
+            <if test="setplay != null">setplay = #{setplay},</if>
+
+            <if test="fhwrecord != null">fhwrecord = #{fhwrecord},</if>
+            <if test="fhorecord != null">fhorecord = #{fhorecord},</if>
+            <if test="shwrecord != null">shwrecord = #{shwrecord},</if>
+            <if test="shorecord != null">shorecord = #{shorecord},</if>
+
+            <if test="result != null">result = #{result},</if>
+            <if test="formation != null">formation = #{formation},</if>
+            <if test="objectpoint != null">objectpoint = #{objectpoint},</if>
+            <if test="fw_description != null">fw_description = #{fw_description},</if>
+            <if test="mf_description != null">mf_description = #{mf_description},</if>
+            <if test="df_description != null">df_description = #{df_description},</if>
+
+            <if test="description != null">description = #{description},</if>
+            <if test="youtubesource != null">youtubesource = #{youtubesource},</if>
+            <if test="sptrid != null">sptrid = #{sptrid},</if>
+            lastupdatedate=now()
+        </set>
+        where exgameid = #{exgameid}
+    </update>
+
+
+    <delete id="deleteRow" parameterType="int">
+        DELETE from exgames where exgameid=#{param1}
+    </delete>
+
+
+
+    <select id="selectOne" resultType="com.jui.stm.vo.ExGameVo" parameterType="com.jui.stm.vo.ExGameVo">
+        select exgameid,teamid,exclass,oppoteam,
+	           exgamedate,location,weather,
+	           fw,mf,df,
+	           org,passing,fig,
+	           fhwrecord,fhorecord,shwrecord,shorecord,
+               result,formation,description,creationdate,
+               fw_description,mf_description,df_description,
+               objectpoint,youtubesource,setplay,shooting,sptrid
+        from exgames
+        where exgameid = #{exgameid}
+    </select>
+
+    <select id="getExgameCount" resultType="int" parameterType="com.jui.stm.dto.PagingDTO">
+        select count(*)
+        from exgames
+        where teamid=#{teamid}
+        <if test="fromdate != null and todate != null">
+            and exgamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and exgamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and exgamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+        <if test="oppoteam != null">
+            AND oppoteam like CONCAT('%', #{oppoteam},'%')
+        </if>
+        <if test="weather != null">
+            AND weather like CONCAT('%', #{weather},'%')
+        </if>
+        <if test="location != null">
+            AND location like CONCAT('%', #{location},'%')
+        </if>
+        <if test="result != null">
+            and result = #{result}
+        </if>
+        <if test="formation != null">
+            AND formation like CONCAT('%', #{formation},'%')
+        </if>
+        <if test="exclass != null">
+            AND exclass like CONCAT('%', #{exclass},'%')
+        </if>
+    </select>
+
+    <select id="selectList" resultType="com.jui.stm.vo.ExGameVo" parameterType="com.jui.stm.dto.PagingDTO">
+        select     exgameid,teamid,exclass,oppoteam,
+        exgamedate,location,weather,
+        fw,mf,df,
+        org,passing,fig,
+        fhwrecord,fhorecord,shwrecord,shorecord,
+        result,formation,description,
+        creationdate,
+        fw_description,mf_description,df_description,
+        objectpoint,youtubesource,setplay,shooting,
+        (
+        select count(*)
+        from playergames s
+        where s.exgameid= es.exgameid
+        ) as playercount
+        from exgames es
+        where teamid=#{teamid}
+        <if test="fromdate != null and todate != null">
+            and exgamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and exgamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and exgamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+        <if test="oppoteam != null">
+            AND oppoteam like CONCAT('%', #{oppoteam},'%')
+        </if>
+        <if test="weather != null">
+            AND weather like CONCAT('%', #{weather},'%')
+        </if>
+        <if test="location != null">
+            AND location like CONCAT('%', #{location},'%')
+        </if>
+        <if test="result != null">
+            and result = #{result}
+        </if>
+        <if test="formation != null">
+            AND formation like CONCAT('%', #{formation},'%')
+        </if>
+        <if test="exclass != null">
+            AND exclass like CONCAT('%', #{exclass},'%')
+        </if>
+        order by exgamedate desc  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+</mapper>

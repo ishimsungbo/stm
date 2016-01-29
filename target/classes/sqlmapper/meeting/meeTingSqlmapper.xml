@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.MeetingDao">
+    <insert id="insert" parameterType="com.jui.stm.vo.MeetingVo">
+        INSERT INTO meetings
+(
+teamid,
+subject,
+fromdate,
+todate,
+meetingtype,
+participant,
+content,
+scheduleflag,
+creationdate,
+description
+)
+VALUES
+(
+#{teamid},
+#{subject},
+#{fromdate},
+#{todate},
+#{meetingtype},
+#{participant},
+#{content},
+#{scheduleflag},
+now(),
+#{description}
+);
+
+    </insert>
+
+    <select id="selectList" resultType="com.jui.stm.vo.MeetingVo" parameterType="com.jui.stm.dto.MeetingDTO">
+        select *
+        from meetings
+        where teamid=#{teamid}
+        <if test="fromdate != null and todate != null">
+            AND fromdate between #{fromdate} and #{todate}
+        </if>
+        <if test="subject != null">
+            AND subject like CONCAT('%', #{subject},'%')
+        </if>
+        <if test="meetingtype != null">
+            AND meetingtype like CONCAT('%', #{meetingtype},'%')
+        </if>
+        order by meetingid desc limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="selectCount" resultType="int" parameterType="com.jui.stm.dto.MeetingDTO">
+        select count(*)
+        from meetings
+        where teamid=#{teamid}
+        <if test="fromdate != null and todate != null">
+            AND fromdate between #{fromdate} and #{todate}
+        </if>
+        <if test="subject != null">
+            AND subject like CONCAT('%', #{subject},'%')
+        </if>
+        <if test="meetingtype != null">
+            AND meetingtype like CONCAT('%', #{meetingtype},'%')
+        </if>
+    </select>
+
+    <select id="getmeetingData" resultType="com.jui.stm.vo.MeetingVo">
+        select *
+        from meetings
+        where meetingid=#{meetingid}
+    </select>
+
+</mapper>

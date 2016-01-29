@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.JounalTimeLineDao">
+
+       <select id="insert" parameterType="com.jui.stm.vo.TrjrtimelineVo">
+        INSERT INTO trjournaltimeline
+        (
+        jeid,
+        timelineid,
+        teamid,
+        trminute,
+        trainingid,
+        description,
+        creationdate,
+        satisfaction,
+        linenum
+        )
+        VALUES
+        (
+        #{jeid},
+        #{timelineid},
+        #{teamid},
+        #{trminute},
+        #{trainingid},
+        #{description},
+        now(),
+        #{satisfaction},
+        #{linenum}
+        );
+       </select>
+
+ <select id="selectRowdata" resultType="com.jui.stm.vo.TrjrtimelineVo">
+  select tl.*,
+		(
+        select t.trname
+        from triningprograms t
+        where t.trainingid=tl.trainingid
+        ) as trname
+  from trjournaltimeline tl
+  where jeid = #{param1}
+ </select>
+
+</mapper>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.TrJrsDao">
+
+       <select id="selectList" resultType="com.jui.stm.vo.TrjournalVo" parameterType="com.jui.stm.dto.PagingDTO">
+              select a.*,
+                     (
+                     select count(*)
+                     from trjournalplayer t
+                     where t.jeid=a.jeid
+                     ) as playercount
+              from trjournals a
+              where teamid=#{teamid}
+              <if test="fromdate != null and todate != null">
+                     AND trdate between #{fromdate} and #{todate}
+              </if>
+              <if test="weather != null">
+                     AND weather like CONCAT('%', #{weather},'%')
+              </if>
+              <if test="location != null">
+                     AND location like CONCAT('%', #{location},'%')
+              </if>
+              <if test="exclass != null">
+                     AND exclass = #{exclass}
+              </if>
+              <if test="concept != null">
+                     AND concept like CONCAT('%', #{concept},'%')
+              </if>
+              order by jeid desc limit #{pageSize} offset #{startRowNum}
+       </select>
+
+       <select id="totalCount" parameterType="com.jui.stm.dto.PagingDTO" resultType="int">
+              select count(*)
+              from trjournals
+              where teamid=#{teamid}
+              <if test="fromdate != null and todate != null">
+                     AND trdate between #{fromdate} and #{todate}
+              </if>
+              <if test="exclass != null">
+                     AND exclass = #{exclass}
+              </if>
+              <if test="weather != null">
+                     AND weather like CONCAT('%', #{weather},'%')
+              </if>
+              <if test="location != null">
+                     AND location like CONCAT('%', #{location},'%')
+              </if>
+              <if test="concept != null">
+                     AND concept like CONCAT('%', #{concept},'%')
+              </if>
+       </select>
+
+       <insert id="insert" parameterType="com.jui.stm.vo.TrjournalVo">
+              INSERT INTO trjournals
+              (jedatefrom,
+              jedateto,
+              location,
+              performer,
+              exclass,
+              concept,
+              conceptobject,
+              description,
+              teamid,
+              creationdate,
+              satisfaction,
+              trdate,
+              good,
+              insufficiency,
+              weather
+              )
+              VALUES
+              (
+              #{jedatefrom},
+              #{jedateto},
+              #{location},
+              #{performer},
+              #{exclass},
+              #{concept},
+              #{conceptobject},
+              #{description},
+              #{teamid},
+              now(),
+              #{satisfaction},
+              #{trdate},
+              #{good},
+              #{insufficiency},
+              #{weather}
+              );
+              <selectKey keyProperty="jeid" resultType="Integer" order="AFTER">
+                     SELECT LAST_INSERT_ID()
+              </selectKey>
+       </insert>
+
+       <select id="selectRowdata" resultType="com.jui.stm.vo.TrjournalVo">
+              select *
+              from trjournals
+              where jeid = #{param1}
+       </select>
+
+       <delete id="deleteHeader">
+              delete from trjournals where jeid=#{param1}
+       </delete>
+
+       <delete id="deleteTimeLine">
+              delete from trjournaltimeline where jeid=#{param1}
+       </delete>
+
+       <delete id="deletePlayer">
+              delete from trjournalplayer where jeid=#{param1}
+       </delete>
+
+       <update id="updateHeader" parameterType="com.jui.stm.vo.TrjournalVo">
+              UPDATE trjournals  <set>
+              <if test="location != null">location = #{location},</if>
+              <if test="performer != null">  performer = #{performer}, </if>
+              <if test="exclass != null">  exclass = #{exclass}, </if>
+              <if test="concept != null">  concept = #{concept}, </if>
+              <if test="conceptobject != null">  conceptobject = #{conceptobject}, </if>
+              <if test="description != null">  description = #{description}, </if>
+              <if test="satisfaction != null">  satisfaction = #{satisfaction}, </if>
+              <if test="trdate != null">  trdate = #{trdate}, </if>
+              <if test="good != null">  good = #{good}, </if>
+              <if test="insufficiency != null">  insufficiency = #{insufficiency}, </if>
+              <if test="weather != null">  weather = #{weather}, </if>
+              creationdate=now()
+       </set>
+
+              WHERE jeid = #{jeid};
+       </update>
+</mapper>

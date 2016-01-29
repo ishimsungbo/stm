@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.MatchDao">
+    <insert id="matchInsert" parameterType="com.jui.stm.vo.MatchsVo">
+        insert into matchs(name,fromdate,todate,location,description,creationdate,lastupdatedate,teamid,exclass,goal,preparation,satisfaction,lack,formation)
+      VALUES      (#{name},#{fromdate},#{todate},#{location},#{description},now(),now(),#{teamid},#{exclass},#{goal},#{preparation},#{satisfaction},#{lack},#{formation})
+    </insert>
+
+    <select id="selectList" resultType="com.jui.stm.vo.MatchsVo" parameterType="com.jui.stm.dto.MeetingDTO">
+        select *
+        ,(
+        select count(*)
+        from games a
+        where a.matchid=b.matchid
+        and a.result='L'
+        ) as wincount
+        ,(
+        select count(*)
+        from games a
+        where a.matchid=b.matchid
+        and a.result='W'
+        ) as losscount
+        from matchs b
+        where teamid=#{teamid}
+        <if test="fromdate != null and todate != null">
+            AND fromdate between #{fromdate} and #{todate}
+        </if>
+        <if test="name != null">
+            AND name like CONCAT('%', #{name},'%')
+        </if>
+        <if test="exclass != null">
+            AND exclass = #{exclass}
+        </if>
+        <if test="location != null">
+            AND location = #{location}
+        </if>
+        order by matchid desc limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="selectCount" resultType="int" parameterType="com.jui.stm.dto.MeetingDTO">
+        select count(*)
+        from matchs
+        where teamid=#{teamid}
+        <if test="fromdate != null and todate != null">
+            AND fromdate between #{fromdate} and #{todate}
+        </if>
+        <if test="name != null">
+            AND name like CONCAT('%', #{name},'%')
+        </if>
+        <if test="exclass != null">
+            AND exclass = #{exclass}
+        </if>
+        <if test="location != null">
+            AND location = #{location}
+        </if>
+    </select>
+
+    <select id="matchOne" resultType="com.jui.stm.vo.MatchsVo" parameterType="int">
+        select *
+        from matchs
+        where teamid=#{param1}
+        and matchid = #{param2}
+    </select>
+
+    <update id="matchUpdate" parameterType="com.jui.stm.vo.MatchsVo">
+        update matchs
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="fromdate != null">fromdate = #{fromdate},</if>
+            <if test="todate != null">todate = #{todate},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="exclass != null">exclass = #{exclass},</if>
+            <if test="goal != null">goal = #{goal},</if>
+            <if test="preparation != null">preparation = #{preparation},</if>
+            <if test="satisfaction != null">satisfaction = #{satisfaction},</if>
+            <if test="lack != null">lack = #{lack},</if>
+            <if test="formation != null">formation = #{formation},</if>
+            lastupdatedate=now()
+        </set>
+        where teamid=#{teamid}
+        AND   matchid=#{matchid}
+    </update>
+
+    <delete id="delete">
+        delete from matchs where teamid=${param1} and  matchid=#{param2}
+    </delete>
+
+
+
+</mapper>

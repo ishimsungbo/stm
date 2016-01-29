@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.CalendarDao">
+    <select id="list" resultType="com.jui.stm.vo.CalendarVo">
+          select *
+          from teamcalendar where teamid=#{param1}
+       </select>
+
+    <insert id="createSchedile">
+        INSERT INTO teamcalendar
+        (calendarid,title,start,end,creationdate,teamid,content,color)
+        VALUES
+        (#{calendarid},#{title},#{start},#{end},now(),#{teamid},#{content},#{color});
+    </insert>
+
+    <update id="updateRow" parameterType="com.jui.stm.vo.CalendarVo">
+        update teamcalendar set
+         start = #{start}
+        ,end   = #{end}
+        ,content = #{content}
+        ,title = #{title}
+        ,color = #{color}
+        where calendarid = #{calendarid}
+    </update>
+
+    <delete id="deleteRow" parameterType="com.jui.stm.vo.CalendarVo">
+        delete from teamcalendar where calendarid = #{calendarid}
+    </delete>
+</mapper>

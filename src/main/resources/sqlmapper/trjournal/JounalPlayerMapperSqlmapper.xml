@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.TrjrPlayerDao">
+
+       <select id="tempPlayerlist" resultType="com.jui.stm.vo.TrJrPlayerVo" parameterType="com.jui.stm.vo.PlayerVo">
+              select teamid,
+                     playerid,
+                     playername
+              from  players
+              where STATUS='Y'
+              and teamid=#{teamid}
+              <if test="exclass != null">
+              AND   exclass=#{exclass}
+              </if>
+       </select>
+       
+       <insert id="insert" parameterType="com.jui.stm.vo.TrJrPlayerVo">
+INSERT INTO trjournalplayer
+(
+playerid,
+status,
+satisfaction,
+injury,
+injurydesc,
+description,
+creationdate,
+jeid,
+teamid
+)
+VALUES
+(
+#{playerid},
+#{status},
+#{satisfaction},
+#{injury},
+#{injurydesc},
+#{description},
+now(),
+#{jeid},
+#{teamid}
+)
+       </insert>
+
+       <select id="selectRowdata" resultType="com.jui.stm.vo.TrJrPlayerVo">
+              select a.*,
+					( select pl.playername
+                      from players pl
+                      where pl.playerid=a.playerid) as playername
+              from trjournalplayer a
+              where jeid = #{param1}
+       </select>
+
+</mapper>

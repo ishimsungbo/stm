@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.SptrainingDao">
+       <insert id="insertSp">
+              insert into sptraining(
+ fromdate
+,todate
+,subject
+,location
+,creationdate
+,lastupdatedate
+,object
+,addscflag
+,description
+,ballcount
+,conecount
+,platecount
+,vestuniform
+,polescount
+,hurdles
+,ladder
+,roundbases
+,participationplayer
+,teamid
+)values (
+ #{fromdate}
+,#{todate}
+,#{subject}
+,#{location}
+,now()
+,now()
+,#{object}
+,#{addscflag}
+,#{description}
+,#{ballcount}
+,#{conecount}
+,#{platecount}
+,#{vestuniform}
+,#{polescount}
+,#{hurdles}
+,#{ladder}
+,#{roundbases}
+,#{participationplayer}
+,#{teamid}
+)
+       </insert>
+
+    <select id="sptrainingList" resultType="com.jui.stm.vo.SptrainingVo" parameterType="int">
+      select * from sptraining where teamid=#{param1}
+    </select>
+
+    <select id="selectRow" resultType="com.jui.stm.vo.SptrainingVo">
+      select * from sptraining where sptrid=#{param1}
+    </select>
+
+    <delete id="deleteSp">
+        delete from sptraining where sptrid=#{param1}
+    </delete>
+
+    <update id="updateSp" parameterType="com.jui.stm.vo.SptrainingVo">
+        UPDATE sptraining SET
+        fromdate = #{fromdate},
+        todate = #{todate},
+        subject = #{subject},
+        location = #{location},
+        lastupdatedate = now(),
+        object = #{object},
+        description = #{description},
+        ballcount = #{ballcount},
+        conecount = #{conecount},
+        platecount = #{platecount},
+        vestuniform = #{vestuniform},
+        polescount = #{polescount},
+        hurdles = #hurdles},
+        ladder = #{ladder},
+        roundbases = #{roundbases},
+        participationplayer = #{participationplayer}
+        WHERE sptrid = #{sptrid}
+    </update>
+
+</mapper>

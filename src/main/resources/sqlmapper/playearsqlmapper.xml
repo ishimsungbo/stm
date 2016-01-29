@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.PlyearDao">
+
+       <select id="getPlayerRec" resultType="com.jui.stm.query.vo.PlayerCoTrVo">
+              select (
+              select count(*)
+              from coachings a
+              where a.playerid=b.playerid
+              ) as coachingcount,
+                            (
+              select count(*)
+              from coachings a
+              where a.playerid=b.playerid
+              and   coachinglevel='GAME'
+              ) as GAME,
+                            (
+              select count(*)
+              from coachings a
+              where a.playerid=b.playerid
+              and   coachinglevel='EXGAME'
+              ) as EXGAME,
+                       (
+              select count(*)
+              from coachings a
+              where a.playerid=b.playerid
+              and   coachinglevel='EX'
+              ) as EX,
+			  (
+              SELECT COUNT(*)
+              FROM trjournalplayer c
+              WHERE c.playerid=b.playerid
+              and   c.status='Y'
+              ) AS TRCOUNT,
+                            (
+              SELECT round(AVG(c.satisfaction))
+              FROM trjournalplayer c
+              WHERE c.playerid=b.playerid
+              ) AS satipoint,
+              (
+              SELECT count(*)
+              FROM trjournalplayer c
+              WHERE c.playerid = b.playerid
+              and   c.injury='Y'
+              ) AS injucount,
+			 (
+              select round(AVG(d.learnscore))
+              from coachings d
+              where d.playerid=b.playerid
+              ) as LEARNSCORE
+              from players b
+              where playerid=#{param1}
+       </select>
+
+
+       <insert id="InsertPlyear">
+              INSERT INTO players (teamid,picture,playername,positioncategory,positioncode,joindate,status,description,creationdate,lastupdatedate,exclass,withdrawdate,backnumber)
+              VALUES                ( #{teamid},#{picture},#{playername},#{positioncategory},#{positioncode},#{joindate},#{status}
+                                     ,#{description},now(),now(),#{exclass},#{withdrawdate},#{backnumber})
+              <selectKey keyProperty="playerid" resultType="Integer" order="AFTER">
+                     SELECT LAST_INSERT_ID()
+              </selectKey>
+       </insert>
+
+       <select id="PlayerList" resultType="com.jui.stm.vo.PlayerVo" parameterType="com.jui.stm.dto.PagingDTO">
+              select teamid,
+              playerid,
+              picture,
+              playername,
+              positioncategory,
+              positioncode,
+              joindate,
+              status,
+              description,
+              withdrawdate,
+              creationdate,
+              lastupdatedate,
+              exclass,
+              (select count(*) from playergames where exgameid!=0 and	playerid=ps.playerid) as exgamecount,
+              (select count(*) from playergames where gameid!=0 and	playerid=ps.playerid) as gamecount,
+              (select count(*) from coachings where playerid = ps.playerid) as 'coachingcount',
+              (
+              select count(*)
+              from evaluationplayers ev
+              where ev.playerid=ps.playerid
+              ) as 'evcount'
+              ,
+              (
+              select sl.description
+              from stm_lookups sl
+              where sl.LookupType='PLAYERCLASS'
+              AND	sl.LookupCode = ps.exclass
+              ) as exclass_disp
+              from players ps
+              where teamid=#{teamid}
+              <if test="exclass != null">
+                and exclass = #{exclass}
+              </if>
+              <if test="positioncode != null">
+                     and positioncode = #{positioncode}
+              </if>
+              <if test="status != null">
+                     and status = #{status}
+              </if>
+              <if test="fromdate != null and todate != null">
+                     AND joindate between #{fromdate} and #{todate}
+              </if>
+              order by playerid desc  limit #{pageSize} offset #{startRowNum}
+       </select>
+
+       <select id="TeamPlayerList" resultType="com.jui.stm.vo.PlayerVo">
+          select teamid,
+                 playerid,
+                 picture,
+                 playername,
+                 positioncategory,
+                 positioncode,
+                 joindate,
+                 status,
+                 description,
+                 withdrawdate,
+                 creationdate,
+                 lastupdatedate
+                 from players where teamid=#{param1};
+       </select>
+
+       <select id="Findplayerid" resultType="int">
+              select playerid
+              from players
+              where teamid=#{param1}
+              AND   playername=#{param2}
+       </select>
+
+       <update id="UpdatePicture">
+              update players SET
+               picture= #{param2},
+               lastupdatedate=now()
+              where playerid = #{param1}
+       </update>
+
+
+       <select id="getPlayersCount" resultType="int" parameterType="com.jui.stm.dto.PagingDTO">
+              SELECT
+              COUNT(*) count
+              FROM players
+              where teamid = #{teamid}
+              <if test="exclass != null">
+                     and exclass = #{exclass}
+              </if>
+              <if test="positioncode != null">
+                     and positioncode = #{positioncode}
+              </if>
+              <if test="status != null">
+                     and status = #{status}
+              </if>
+              <if test="fromdate != null and todate != null">
+                     AND joindate between #{fromdate} and #{todate}
+              </if>
+       </select>
+
+       <select id="selectOneP" resultType="com.jui.stm.vo.PlayerVo" parameterType="int">
+              select teamid,
+                 playerid,
+                 picture,
+                 playername,
+                 positioncategory,
+                 positioncode,
+                 joindate,
+                 status,
+                 description,
+                 withdrawdate,
+                 DATE_FORMAT(withdrawdate,'%Y-%m-%d') as enddate,
+                 backnumber,exclass
+              from players where playerid = #{param1}
+       </select>
+
+
+       <update id="updatePlayer" parameterType="com.jui.stm.vo.PlayerVo">
+              update players
+              <set>
+                     <if test="playername != null">playername = #{playername},</if>
+                     <if test="exclass != null">exclass    = #{exclass},</if>
+                     <if test="positioncategory != null">positioncategory = #{positioncategory},</if>
+                     <if test="positioncode != null">positioncode = #{positioncode},</if>
+                     <if test="picture != null">picture    = #{picture},</if>
+                     <if test="status != null">status  = #{status},</if>
+                     <if test="description != null">description = #{description},</if>
+                     <if test="joindate != null">joindate =#{joindate},</if>
+                     <if test="backnumber != null">backnumber =#{backnumber},</if>
+              lastupdatedate=now(),
+              withdrawdate =#{withdrawdate}
+              </set>
+              where playerid = #{playerid}
+       </update>
+
+       <select id="getTeamPlayerList" resultType="com.jui.stm.query.vo.PlayerQueryListVo" parameterType="com.jui.stm.query.vo.PlayerQueryListVo">
+              select playerid,playername,exclass
+              from players
+              where 1=1
+              and   teamid=#{teamid}
+              <if test="exclass != null ">
+              and	exclass=#{exclass}
+              </if>
+       </select>
+
+       <select id="getPlayerName" resultType="String">
+              select playername
+              from players
+              where playerid = #{param1}
+       </select>
+
+
+</mapper>

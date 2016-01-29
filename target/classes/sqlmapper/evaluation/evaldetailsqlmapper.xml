@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.EvaldetaileDao">
+
+       <insert id="insert" parameterType="com.jui.stm.vo.EvalDetailVo">
+              INSERT INTO evaluationdetails
+              (
+              teamid,
+              playerid,
+              evaluationid,
+              pass,
+              shooting,
+              kick,
+              dribble,
+              game,
+              tactics,
+              leadings,
+              creativity,
+              controll,
+              creationdate,
+              lastupdatedate)
+              VALUES
+              (
+              #{teamid},
+              #{playerid},
+              #{evaluationid},
+              #{pass},
+              #{shooting},
+              #{kick},
+              #{dribble},
+              #{game},
+              #{tactics},
+              #{leadings},
+              #{creativity},
+              #{controll},
+              now(),
+              now()
+              );
+       </insert>
+
+       <update id="update" parameterType="com.jui.stm.vo.EvalDetailVo">
+              update evaluationdetails
+              <set>
+                     <if test="pass != null">pass = #{pass},</if>
+                     <if test="shooting != null">shooting    = #{shooting},</if>
+                     <if test="kick != null">kick = #{kick},</if>
+                     <if test="dribble != null">dribble = #{dribble},</if>
+                     <if test="game != null">game = #{game},</if>
+                     <if test="tactics != null">tactics = #{tactics},</if>
+                     <if test="leadings != null">leadings = #{leadings},</if>
+                     <if test="creativity != null">creativity = #{creativity},</if>
+                     <if test="controll != null">controll = #{controll},</if>
+                     lastupdatedate=now()
+              </set>
+              where detailid = #{detailid}
+       </update>
+
+       <delete id="delete">
+              DELETE from evaluationdetails where detaileid = #{param1}
+       </delete>
+
+       <select id="getDetailData" resultType="com.jui.stm.vo.EvalDetailVo">
+              select  *
+              from   evaluationdetails
+              where  teamid= #{param1}
+              and	 playerid=#{param2}
+              and    evaluationid=#{param3}
+       </select>
+
+
+</mapper>

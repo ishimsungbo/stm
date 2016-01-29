@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.MatchGamesDao">
+
+    <select id="matchList" resultType="com.jui.stm.query.vo.MatchForgameVo">
+              select concat(name,'-',date_format(fromdate,'%Y%m%d')) as name,
+                     matchid
+              from matchs
+              where teamid=#{param1}
+       </select>
+
+
+    <insert id="insertGame" parameterType="com.jui.stm.vo.GameVo">
+         INSERT INTO games
+    (gameid,
+ teamid,
+ scheduleflag,
+ matchid,
+ exclass,
+ oppoteam,
+ gamedate,
+ location,
+ weather,
+ fw,
+ mf,
+ df,
+ org,
+ fig,
+ setplay,
+ fhwrecord,
+ fhorecord,
+ shwrecord,
+ shorecord,
+ result,
+ formation,
+ description,
+ fw_description,
+ mf_description,
+ df_description,
+ youtubesource,
+ creationdate,
+ lastupdatedate)
+VALUES
+  (#{gameid},
+   #{teamid},
+   #{scheduleflag},
+   #{matchid},
+   #{exclass},
+   #{oppoteam},
+   #{gamedate},
+   #{location},
+   #{weather},
+   #{fw},
+   #{mf},
+   #{df},
+   #{org},
+   #{fig},
+   #{setplay},
+   #{fhwrecord},
+   #{fhorecord},
+   #{shwrecord},
+   #{shorecord},
+   #{result},
+   #{formation},
+   #{description},
+   #{fw_description},
+   #{mf_description},
+   #{df_description},
+   #{youtubesource},
+   now(),
+   now()
+   )
+    </insert>
+
+ <select id="getMatchCount" parameterType="com.jui.stm.dto.PagingDTO" resultType="int">
+  select count(*)
+  from games
+  where teamid=#{teamid}
+  <if test="oppoteam != null">
+   AND oppoteam like CONCAT('%', #{oppoteam},'%')
+  </if>
+  <if test="matchid != 0">and matchid=#{matchid}</if>
+  <if test="weather != null">
+   AND weather like CONCAT('%', #{weather},'%')
+  </if>
+  <if test="location != null">
+   AND location like CONCAT('%', #{location},'%')
+  </if>
+  <if test="result != null">
+   and result = #{result}
+  </if>
+  <if test="formation != null">
+   AND formation like CONCAT('%', #{formation},'%')
+  </if>
+  <if test="exclass != null">
+   AND exclass like CONCAT('%', #{exclass},'%')
+  </if>
+  <if test="fromdate != null and todate != null">
+   and gamedate between #{fromdate} and #{todate}
+  </if>
+  <if test="fromdate != null and todate == null">
+   and gamedate >= #{fromdate}
+  </if>
+  <if test="fromdate == null and todate != null">
+   and gamedate  <![CDATA[  <=  ]]> #{todate}
+  </if>
+ </select>
+
+ <select id="gameList" parameterType="com.jui.stm.dto.PagingDTO" resultType="com.jui.stm.vo.GameVo">
+  select *
+  ,(select name from matchs a where a.matchid=ga.matchid ) as matchname
+  ,(select count(*) from playergames a where a.gameid=ga.gameid ) as playercount
+  from games ga
+  where teamid=#{teamid}
+  <if test="oppoteam != null">
+   AND oppoteam like CONCAT('%', #{oppoteam},'%')
+  </if>
+  <if test="weather != null">
+   AND weather like CONCAT('%', #{weather},'%')
+  </if>
+  <if test="location != null">
+   AND location like CONCAT('%', #{location},'%')
+  </if>
+  <if test="result != null">
+   and result = #{result}
+  </if>
+  <if test="formation != null">
+   AND formation like CONCAT('%', #{formation},'%')
+  </if>
+  <if test="exclass != null">
+   AND exclass like CONCAT('%', #{exclass},'%')
+  </if>
+  <if test="fromdate != null and todate != null">
+   and gamedate between #{fromdate} and #{todate}
+  </if>
+  <if test="fromdate != null and todate == null">
+   and gamedate >= #{fromdate}
+  </if>
+  <if test="fromdate == null and todate != null">
+   and gamedate  <![CDATA[  <=  ]]> #{todate}
+  </if>
+  <if test="matchid != 0">and matchid=#{matchid}</if>
+  order by gamedate desc  limit #{pageSize} offset #{startRowNum}
+ </select>
+
+ <select id="gameRow" resultType="com.jui.stm.vo.GameVo">
+  select *,
+        (select count(*) from playergames a where a.gameid=ga.gameid ) as playercount
+  from games ga
+  where gameid=#{param1}
+ </select>
+
+ <update id="update" parameterType="com.jui.stm.vo.GameVo">
+  update games
+  <set>
+   <if test="oppoteam != null">oppoteam = #{oppoteam},</if>
+   <if test="gamedate != null">gamedate    = #{gamedate},</if>
+   <if test="exclass != null">exclass = #{exclass},</if>
+   <if test="location != null">location = #{location},</if>
+   <if test="weather != null">weather = #{weather},</if>
+
+   <if test="fw != null">fw = #{fw},</if>
+   <if test="mf != null">mf = #{mf},</if>
+   <if test="df != null">df = #{df},</if>
+   <if test="org != null">org = #{org},</if>
+   <if test="fig != null">fig = #{fig},</if>
+   <if test="setplay != null">setplay = #{setplay},</if>
+
+   <if test="fhwrecord != null">fhwrecord = #{fhwrecord},</if>
+   <if test="fhorecord != null">fhorecord = #{fhorecord},</if>
+   <if test="shwrecord != null">shwrecord = #{shwrecord},</if>
+   <if test="shorecord != null">shorecord = #{shorecord},</if>
+
+   <if test="result != null">result = #{result},</if>
+   <if test="formation != null">formation = #{formation},</if>
+   <if test="fw_description != null">fw_description = #{fw_description},</if>
+   <if test="mf_description != null">mf_description = #{mf_description},</if>
+   <if test="df_description != null">df_description = #{df_description},</if>
+
+   <if test="description != null">description = #{description},</if>
+   <if test="youtubesource != null">youtubesource = #{youtubesource},</if>
+   <if test="matchid != null">matchid = #{matchid},</if>
+   lastupdatedate=now()
+  </set>
+  where gameid = #{gameid}
+ </update>
+</mapper>

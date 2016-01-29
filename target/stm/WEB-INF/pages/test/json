@@ -1,0 +1,121 @@
+
+<script>
+    //일반적인 json 연동법
+    //start script 부분에 jui 를 코딩해도 가능하다
+    /*
+     $.get('/test.json?playerid=${list.get(0).playerid}',function(data){
+     //start script
+     var jsonlists = data.jsonlists;
+
+     var subjectarray = jsonlists.subject;
+
+     var string ='안녕하세요';
+
+     for(var i in jsonlists){
+
+     var list = jsonlists[i];
+     var cnt = 0;
+
+
+     for(var prop in list){
+
+     var text = list[prop];
+
+     var tr = table.find('tr').eq(parseInt(i)+1);
+
+     var td = tr.find('> td').eq(cnt);
+
+     td.text(text);
+
+     cnt++;
+
+     }
+     }
+     },'json');
+
+
+     //세부적인 옵션 설정을 위해 ajax로 불러온다
+     //디스패쳐 및 pom를 설정하고  jsonview 방식으로 할 경우 아래처럼 사용한다.
+     // 2015-10-22 아마도 안드로이드에서 아래 방식을 해야 할 듯하다.
+     $.ajax({
+     url:'/test.json?playerid=${list.get(0).playerid}',
+     type:'get',
+     datatype:'json',
+     error:function(){
+     console.log('데이터 불러오기 실패');
+     },
+     success:function(data){
+     console.log(data);
+     }
+     });
+
+
+     $.get('/test.json?playerid=${list.get(0).playerid}',function(data){
+
+     var jsonlists = data.jsonlists;
+
+     var testarray=array[];
+     alert('배열값은? : '+testarray);
+
+     for(var i =0 ; jsonlists.length >= i ; i++){
+     alert(jsonlists[i].subject+' : '+jsonlists[i].exdate);
+     }
+
+     jui.ready([ "chart.builder" ], function(chart) {
+
+     c = chart("#chart", {
+     width: 600,
+     height : 400,
+     theme : "jennifer",
+     axis : {
+     x : {
+     type : "block",
+     domain :
+     function(){
+
+     var array=[];
+
+     for(var i=0;jsonlists.length > 0 ; i++)
+
+     return array;
+     }// [ 'Q1', "Q2", "Q3", 'Q4' ]
+     },
+     y : {
+     type : "range",
+     domain : function(d) {
+     return d.sales;
+     },
+     step : 10
+     },
+     c : {
+     type : "grid3d",
+     domain : [ "sales" ]
+     },
+     data : [
+     { sales: 100},
+     { sales: 15},
+     { sales: 8},
+     { sales: 18}
+     ],
+     depth : 20,
+     degree : 30
+     },
+     brush : {
+     type : "stackcolumn3d",
+     outerPadding : 20
+     },
+     widget : {
+     type : "tooltip"
+     },
+     style : {
+     gridAxisBorderColor : "black",
+     gridBorderColor : "#dcdcdc"
+     }
+     });
+
+     })
+
+     },'json');
+     */
+
+</script>

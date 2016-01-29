@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.OptionListDao">
+
+       <select id="exgameList" resultType="com.jui.stm.option.OexgameVo">
+        select exgameid,
+               exclass,
+               CONCAT(date_format(exgamedate,'%Y%m%d'),'-',oppoteam) as exgamename
+        from exgames  where teamid=#{param1} order by exgameid desc
+       </select>
+
+
+</mapper>

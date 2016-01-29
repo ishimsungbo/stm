@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.EvaluationPlayerDao">
+    <insert id="InsertEvalPlayer">
+              INSERT INTO evaluationplayers(evaluationid,playerid,pass,shooting,kick,dribble,attend,creationdate,lastupdatedate,
+               game,tactics,leadings,creativity,controll
+               )
+              VALUES (#{evaluationid},#{playerid},#{pass},#{shooting},#{kick},#{dribble},#{attend},now(),now(),#{game},#{tactics},#{leadings},
+              #{creativity},#{controll}
+              )
+       </insert>
+    <select id="getperRecord" resultType="com.jui.stm.vo.EvalrecordVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+       select c.teamid,b.playerid,c.playername,a.subject,a.date,b.pass,b.shooting,b.kick,b.dribble,b.game,b.tactics,b.leadings,
+       b.creativity,b.controll
+       from evaluations a,
+	        evaluationplayers b,
+            players c
+       where a.evaluationid = b.evaluationid
+       and c.playerid =b.playerid
+       and	b.attend='Y'
+       and	b.playerid=#{playerid}
+       order by a.evaluationid limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getPlayerName" resultType="String">
+        select playername
+        from players
+        where playerid=#{param1}
+  </select>
+
+    <select id="getTotalCount" resultType="int">
+        select count(*)
+        from evaluationplayers
+        where playerid=#{param1}
+    </select>
+
+    <select id="getEvalplayerList" resultType="com.jui.stm.vo.EvaluationPlayerVo" parameterType="int">
+select a.*,
+	(
+    select ps.playername
+    from players ps
+    where ps.playerid=a.playerid
+	) playername,
+	(
+	  select case count(*)
+			when 1 then "Y"
+            when 0 then "N"
+            end
+	  from evaluationdetails
+	  where playerid = a.playerid
+	        and	evaluationid = a.evaluationid
+	) detailecount
+     from evaluationplayers a
+     where a.evaluationid=#{param1}
+    </select>
+
+    <update id="upadteEvalPlayer" parameterType="com.jui.stm.vo.EvaluationPlayerVo">
+       update evaluationplayers set
+         attend = #{attend}
+        ,pass = #{pass}
+        ,shooting =#{shooting}
+        ,kick = #{kick}
+        ,dribble = #{dribble}
+        ,lastupdatedate = now()
+        ,game=#{game}
+        ,tactics=#{tactics}
+        ,leadings=#{leadings}
+        ,creativity =#{creativity}
+        ,controll =#{controll}
+        WHERE evalpkid = #{evalpkid}
+    </update>
+
+
+    <select id="getRecordPlayer" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.pass,b.shooting,b.kick,b.dribble,b.game,b.tactics,b.leadings,b.creativity,controll
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecordcreativity" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.creativity
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+
+    <select id="getRecordcontroll" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.controll
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecordpass" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.pass
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecordshooting" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.shooting
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecordkick" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.kick
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecorddribble" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.dribble
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecordgame" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.game
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecordleadings" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.leadings
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="getRecordtactics" resultType="com.jui.stm.vo.EvalpartoneVo" parameterType="com.jui.stm.dto.GrappaingDTO" >
+        select b.tactics
+        from evaluations a,
+        evaluationplayers b,
+        players c
+        where a.evaluationid = b.evaluationid
+        and c.playerid =b.playerid
+        and	b.attend='Y'
+        and	b.playerid=#{playerid}
+        order by a.evaluationid  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <delete id="delete">
+        delete from evaluationplayers where evaluationid=#{param1}
+    </delete>
+
+
+
+
+</mapper>

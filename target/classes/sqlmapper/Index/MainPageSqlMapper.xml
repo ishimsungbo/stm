@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.IndexPageDao">
+
+        <select id="gamePlayerAvg" resultType="com.jui.stm.vo.PlayerGameVo" parameterType="com.jui.stm.query.vo.MainExgameQueryVo">
+            select p.playername,
+                  pg.playerid,
+                  round(avg(pg.creativity)) as creativity,
+                  round(avg(pg.tactics)) as tactics,
+                  round(avg(pg.strength)) as strength,
+                  round(avg(pg.offensive)) as offensive,
+                  round(avg(pg.defensive)) as defensive,
+                  round(avg(pg.pass)) as pass,
+                  round(avg(pg.controll)) as controll
+            from playergames pg,
+                games       g,
+                players     p
+            where pg.gameid=g.gameid
+            and	  pg.playerid = p.playerid
+            and   pg.playerid=#{playerid}
+            and   g.teamid=#{teamid}
+            <if test="exclass != null">
+                and g.exclass = #{exclass}
+            </if>
+            <if test="fromdate != null and todate != null">
+                and g.gamedate between #{fromdate} and #{todate}
+            </if>
+            <if test="fromdate != null and todate == null">
+                and gamedate >= #{fromdate}
+            </if>
+            <if test="fromdate == null and todate != null">
+                and gamedate  <![CDATA[  <=  ]]> #{todate}
+            </if>
+            group by pg.playerid
+            union all
+            select "ALL" as playername,
+                   0     as playerid,
+                   round(avg(pg.creativity)) as creativity,
+                   round(avg(pg.tactics)) as tactics,
+                   round(avg(pg.strength)) as strength,
+                   round(avg(pg.offensive)) as offensive,
+                   round(avg(pg.defensive)) as defensive,
+                   round(avg(pg.pass)) as pass,
+                   round(avg(pg.controll)) as controll
+            from playergames pg,
+                 games       g,
+                 players     p
+            where pg.gameid=g.gameid
+            and   g.teamid=#{teamid}
+            and	  pg.playerid = p.playerid
+            and   pg.playerid!=#{playerid}
+            <if test="exclass != null">
+                and g.exclass = #{exclass}
+            </if>
+            <if test="fromdate != null and todate != null">
+                and g.gamedate between #{fromdate} and #{todate}
+            </if>
+            <if test="fromdate != null and todate == null">
+                and gamedate >= #{fromdate}
+            </if>
+            <if test="fromdate == null and todate != null">
+                and gamedate  <![CDATA[  <=  ]]> #{todate}
+            </if>
+        </select>
+
+    <select id="gameInfor" resultType="com.jui.stm.reports.ExgameDto" parameterType="com.jui.stm.query.vo.MainExgameQueryVo">
+        select
+        count(*) as exgamecount,
+        round(avg(fw)) as fw,
+        round(avg(mf)) as mf,
+        round(avg(df)) as df,
+        round(avg(org)) as org,
+        round(avg(fig)) as fig,
+        round(avg(setplay)) as setplay,
+        sum(fhwrecord+shwrecord) as wgoal,
+        sum(fhorecord+shorecord) as ogoal,
+        (select count(*) from games where teamid=#{teamid}
+        <if test="matchid != 0">and matchid = #{matchid}</if>
+        <if test="exclass != null">and exclass = #{exclass} </if>
+        <if test="fromdate != null and todate != null">and gamedate between #{fromdate} and #{todate}</if>
+        <if test="fromdate != null and todate == null">and gamedate >= #{fromdate}</if>
+        <if test="fromdate == null and todate != null">and gamedate  <![CDATA[  <=  ]]> #{todate}</if> and result='W') as wincount,
+        (select count(*) from games where teamid=#{teamid}
+        <if test="matchid != 0">and matchid = #{matchid}</if>
+        <if test="exclass != null">and exclass = #{exclass} </if>
+        <if test="fromdate != null and todate != null">and gamedate between #{fromdate} and #{todate}</if>
+        <if test="fromdate != null and todate == null">and gamedate >= #{fromdate}</if>
+        <if test="fromdate == null and todate != null">and gamedate  <![CDATA[  <=  ]]> #{todate}</if> and result='L') as losscount,
+        (select count(*) from games where teamid=#{teamid}
+        <if test="matchid != 0">and matchid = #{matchid}</if>
+        <if test="exclass != null">and exclass = #{exclass} </if>
+        <if test="fromdate != null and todate != null">and gamedate between #{fromdate} and #{todate}</if>
+        <if test="fromdate != null and todate == null">and gamedate >= #{fromdate}</if>
+        <if test="fromdate == null and todate != null">and gamedate  <![CDATA[  <=  ]]> #{todate}</if> and result='E') as nullcount
+        from games
+        where teamid=#{teamid}
+        <if test="matchid != 0">and matchid = #{matchid}</if>
+        <if test="exclass != null">
+            and exclass = #{exclass}
+        </if>
+        <if test="fromdate != null and todate != null">
+            and gamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and gamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and gamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+    </select>
+
+
+    <select id="exgameInfor" resultType="com.jui.stm.reports.ExgameDto" parameterType="com.jui.stm.query.vo.MainExgameQueryVo">
+        select
+        count(*) as exgamecount,
+        round(avg(fw)) as fw,
+        round(avg(mf)) as mf,
+        round(avg(df)) as df,
+        round(avg(org)) as org,
+        round(avg(passing)) as passing,
+        round(avg(fig)) as fig,
+        round(avg(shooting)) as shooting,
+        round(avg(setplay)) as setplay,
+        sum(fhwrecord+shwrecord) as wgoal,
+        sum(fhorecord+shorecord) as ogoal,
+        (select count(*) from exgames where teamid=#{teamid}
+        <if test="exclass != null">and exclass = #{exclass} </if>
+        <if test="fromdate != null and todate != null">and exgamedate between #{fromdate} and #{todate}</if>
+        <if test="fromdate != null and todate == null">and exgamedate >= #{fromdate}</if>
+        <if test="fromdate == null and todate != null">and exgamedate  <![CDATA[  <=  ]]> #{todate}</if> and result='W') as wincount,
+        (select count(*) from exgames where teamid=#{teamid}
+        <if test="exclass != null">and exclass = #{exclass} </if>
+        <if test="fromdate != null and todate != null">and exgamedate between #{fromdate} and #{todate}</if>
+        <if test="fromdate != null and todate == null">and exgamedate >= #{fromdate}</if>
+        <if test="fromdate == null and todate != null">and exgamedate  <![CDATA[  <=  ]]> #{todate}</if> and result='L') as losscount,
+        (select count(*) from exgames where teamid=#{teamid}
+        <if test="exclass != null">and exclass = #{exclass} </if>
+        <if test="fromdate != null and todate != null">and exgamedate between #{fromdate} and #{todate}</if>
+        <if test="fromdate != null and todate == null">and exgamedate >= #{fromdate}</if>
+        <if test="fromdate == null and todate != null">and exgamedate  <![CDATA[  <=  ]]> #{todate}</if> and result='E') as nullcount
+        from exgames
+        where teamid=#{teamid}
+        <if test="exclass != null">
+            and exclass = #{exclass}
+        </if>
+        <if test="fromdate != null and todate != null">
+            and exgamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and exgamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and exgamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+    </select>
+
+    <select id="exgamePlayer" resultType="com.jui.stm.reports.ExgamePlayerDto" parameterType="com.jui.stm.query.vo.MainExgameQueryVo">
+    select round(avg(creativity)) as creativity,
+    round(avg(tactics)) as tactics,
+    round(avg(strength)) as strength,
+    round(avg(offensive)) as offensive,
+    round(avg(defensive)) as defensive,
+    round(avg(pass)) as pass,
+    round(avg(controll)) as controll
+    from playergames
+    where teamid=${teamid}
+    <if test="playerid != 0"> and playerid=#{playerid}</if>
+    and	  exgameid in (
+    select exgameid
+    from exgames
+    where teamid=${teamid}
+    <if test="exclass != null">
+        and exclass = #{exclass}
+    </if>
+    <if test="fromdate != null and todate != null">
+        and exgamedate between #{fromdate} and #{todate}
+    </if>
+    <if test="fromdate != null and todate == null">
+        and exgamedate >= #{fromdate}
+    </if>
+    <if test="fromdate == null and todate != null">
+        and exgamedate  <![CDATA[  <=  ]]> #{todate}
+    </if>
+    )
+</select>
+
+    <select id="gamePlayer" resultType="com.jui.stm.reports.ExgamePlayerDto" parameterType="com.jui.stm.query.vo.MainExgameQueryVo">
+        select round(avg(creativity)) as creativity,
+        round(avg(tactics)) as tactics,
+        round(avg(strength)) as strength,
+        round(avg(offensive)) as offensive,
+        round(avg(defensive)) as defensive,
+        round(avg(pass)) as pass,
+        round(avg(controll)) as controll
+        from playergames
+        where teamid=${teamid}
+        <if test="playerid != 0"> and playerid=#{playerid}</if>
+        and	  gameid in (
+        select gameid
+        from games
+        where teamid=${teamid}
+        <if test="matchid != 0">and matchid = #{matchid}</if>
+        <if test="exclass != null">
+            and exclass = #{exclass}
+        </if>
+        <if test="fromdate != null and todate != null">
+            and gamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and gamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and gamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+        )
+    </select>
+
+    <select id="playerRegulareval" resultType="com.jui.stm.reports.PlayerAvgDto" parameterType="com.jui.stm.reports.PlayerAvgDto">
+        select a.subject as subject,
+        a.date as date,
+        round((pass)) as pass,
+        round(avg(shooting)) as shooting,
+        round(avg(kick)) as kick,
+        round(avg(dribble)) as dribble,
+        round(avg(game)) as game,
+        round(avg(tactics)) as tactics,
+        round(avg(leadings)) as leadings,
+        round(avg(creativity)) as creativity,
+        round(avg(controll)) as controll
+        from  evaluations a,
+        evaluationplayers b
+        where a.evaluationid = b.evaluationid
+        and	  a.teamid = #{teamid}
+        <if test="fromdate != null and todate != null">
+            and date between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and date >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and date  <![CDATA[  <=  ]]> #{todate}
+        </if>
+        <if test="playerid != 0"> and	b.playerid = #{playerid} </if>
+
+        group by a.date,a.subject
+    </select>
+
+    <select id="exgamePlayerAppear" resultType="com.jui.stm.reports.ExgamePlayerDto" parameterType="com.jui.stm.query.vo.MainExgameQueryVo">
+        select round(avg(creativity)) as creativity,
+        round(avg(tactics)) as tactics,
+        round(avg(strength)) as strength,
+        round(avg(offensive)) as offensive,
+        round(avg(defensive)) as defensive,
+        round(avg(pass)) as pass,
+        round(avg(controll)) as controll
+        from playergames
+        where teamid=${teamid}
+        and playerid=#{playerid}
+        and	  exgameid in (
+        select exgameid
+        from exgames
+        where teamid=${teamid}
+        <if test="exclass != null">
+            and exclass = #{exclass}
+        </if>
+        <if test="fromdate != null and todate != null">
+            and exgamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and exgamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and exgamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+        )
+        group by playerid
+        UNION ALL
+        select round(avg(creativity)) as creativity,
+        round(avg(tactics)) as tactics,
+        round(avg(strength)) as strength,
+        round(avg(offensive)) as offensive,
+        round(avg(defensive)) as defensive,
+        round(avg(pass)) as pass,
+        round(avg(controll)) as controll
+        from playergames
+        where teamid=${teamid}
+        and playerid != #{playerid}
+        and	  exgameid in (
+        select exgameid
+        from exgames
+        where teamid=${teamid}
+        <if test="exclass != null">
+            and exclass = #{exclass}
+        </if>
+        <if test="fromdate != null and todate != null">
+            and exgamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and exgamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and exgamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+        )
+    </select>
+
+
+    <select id="avgPhyinfo" resultType="com.jui.stm.query.vo.PhyResultVo" parameterType="com.jui.stm.query.dto.QueryParam">
+        select  round(avg(height),1) as height,
+        round(avg(weight),1) as weight,
+        round(avg(bodyfat),1) as bodyfat,
+        round(avg(footsize),1) as footsize,
+        round(avg(fifty),1) as fifty,
+        round(avg(onehundred),1) as onehundred,
+        round(avg(twohundred),1) as twohundred,
+        round(avg(fourhundred),1) as fourhundred
+        from physical_headers a,
+        physical_lines	b
+        where a.headerid= b.headerid
+        and a.teamid=#{teamid}
+        <if test="exclass != null"> and exclass = #{exclass} </if>
+        <if test="fromdate != null and todate != null">
+            and exdate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and exdate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and exdate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+    </select>
+
+</mapper>

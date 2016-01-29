@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.PlayerGameDao">
+
+    <insert id="insert" parameterType="com.jui.stm.vo.PlayerGameVo">
+            INSERT INTO playergames
+        (
+        playerid,
+        teamid,
+        exgameid,
+        gameid,
+        intime,
+        creativity,
+        tactics,
+        strength,
+        offensive,
+        defensive,
+        pass,
+        controll,
+        good,
+        problem,
+        review,
+        creationdate,
+        positioncode,
+        backnumber,
+        goal,
+        asist
+        )VALUES(
+        #{playerid},
+        #{teamid},
+        #{exgameid},
+        #{gameid},
+        #{intime},
+        #{creativity},
+        #{tactics},
+        #{strength},
+        #{offensive},
+        #{defensive},
+        #{pass},
+        #{controll},
+        #{good},
+        #{problem},
+        #{review},
+        now(),
+        #{positioncode},
+        #{backnumber},
+        #{goal},
+        #{asist}
+        );
+       </insert>
+
+    <select id="teamPlayerList" resultType="com.jui.stm.vo.PlayerGameVo">
+    select playerid,
+           playername,
+	       backnumber,
+           positioncode
+    from players pl
+    where pl.status='Y'
+    and pl.teamid= #{param1}
+ </select>
+
+    <select id="exgamePlayer" resultType="com.jui.stm.vo.PlayerGameVo">
+        select playerid,
+               playername,
+               backnumber,
+               positioncode
+        from players pl
+        where pl.status='Y'
+        and pl.teamid = #{param1}
+        and pl.exclass = (select ex.exclass
+						  from exgames ex where ex.exgameid=#{param2})
+    </select>
+
+    <select id="gamePlayer" resultType="com.jui.stm.vo.PlayerGameVo">
+        select playerid,
+        playername,
+        backnumber,
+        positioncode
+        from players pl
+        where pl.status='Y'
+        and pl.teamid = #{param1}
+        and pl.exclass = (select e.exclass from games e where e.gameid=#{param2})
+    </select>
+
+    <select id="getExgamePlayerList" resultType="com.jui.stm.vo.PlayerGameVo">
+        select ps.*,
+	         (select playername from players p where playerid=ps.playerid ) as playername
+        from playergames ps where exgameid=#{param1}
+    </select>
+
+    <select id="getGamePlayerList" resultType="com.jui.stm.vo.PlayerGameVo">
+        select ps.*,
+        (select playername from players p where playerid=ps.playerid ) as playername
+        from playergames ps where gameid=#{param1}
+    </select>
+
+    <delete id="delete">
+        delete from playergames where exgameid=#{param1}
+    </delete>
+
+    <delete id="gamedelete">
+        delete from playergames where gameid=#{param1}
+    </delete>
+
+    <select id="playerInfoAvgexgame" parameterType="com.jui.stm.query.vo.PlayerInfoAvgVo" resultType="com.jui.stm.query.vo.PlayerInfoAvgVo">
+        select count(*) as count,
+                sum(goal) as goal,
+                sum(asist) as asist,
+                sum(intime) as intime
+        from players a,
+             exgames  b,
+             playergames c
+        where 1=1
+        and  b.teamid   = #{teamid}
+        and  a.playerid = #{playerid}
+        and	 a.playerid = c.playerid
+        and	 b.exgameid = c.exgameid
+        <if test="exclass != null">
+            AND b.exclass = #{exclass}
+        </if>
+        <if test="weather != null">
+            AND b.weather = #{weather}
+        </if>
+        <if test="fromdate != null and todate != null">
+            and b.exgamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and b.exgamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and b.exgamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+    </select>
+
+    <select id="playerInfoAvggame" parameterType="com.jui.stm.query.vo.PlayerInfoAvgVo" resultType="com.jui.stm.query.vo.PlayerInfoAvgVo">
+        select count(*) as count,
+        sum(goal) as goal,
+        sum(asist) as asist,
+        sum(intime) as intime
+        from players a,
+        games  b,
+        playergames c
+        where 1=1
+        and  b.teamid   = #{teamid}
+        and  a.playerid = #{playerid}
+        and	 a.playerid = c.playerid
+        and	 b.gameid = c.gameid
+        <if test="exclass != null">
+            AND b.exclass = #{exclass}
+        </if>
+        <if test="weather != null">
+            AND b.weather = #{weather}
+        </if>
+        <if test="fromdate != null and todate != null">
+            and b.exgamedate between #{fromdate} and #{todate}
+        </if>
+        <if test="fromdate != null and todate == null">
+            and b.exgamedate >= #{fromdate}
+        </if>
+        <if test="fromdate == null and todate != null">
+            and b.exgamedate  <![CDATA[  <=  ]]> #{todate}
+        </if>
+    </select>
+
+</mapper>

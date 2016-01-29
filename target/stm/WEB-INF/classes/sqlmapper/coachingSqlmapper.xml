@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.CoachingDao">
+       <insert id="insert">
+        INSERT INTO coachings(
+                              playerid,coachinglevel,date,coachingtype,learnscore,creationdate,teamid,
+                              recoachingflag,solution,cause,problem,subject,lastupdatedate
+                              )VALUES(
+                              #{playerid},#{coachinglevel},#{date},#{coachingtype},#{learnscore}
+                              ,now(),#{teamid},#{recoachingflag},#{solution},#{cause},#{problem},#{subject},now()
+                              );
+
+       </insert>
+
+    <select id="listCoachings" resultType="com.jui.stm.vo.CoachingVo" parameterType="com.jui.stm.dto.CoachingDTO">
+        select cs.coachingid,
+              tp.playername,cs.playerid,date,coachinglevel,coachingtype,recoachingflag,problem,cause,solution
+        ,cs.teamid,sl.description as leveldisp,
+        st.description as typedisp,subject
+        from coachings cs,
+        stm_lookups sl,
+        stm_lookups st,
+        players tp
+        where cs.coachinglevel = sl.LookupCode
+        and	 cs.coachingtype = st.LookupCode
+        and	  cs.teamid = tp.teamid
+        and	cs.playerid = tp.playerid
+        and	  sl.LookupType='COACHINGLEVEL'
+        and	  st.LookupType='COACHINGTYPE'
+        and cs.teamid=#{teamid}
+        <if test="coachinglevel != null">
+            and cs.coachinglevel = #{coachinglevel}
+        </if>
+        <if test="coachingtype != null">
+          and cs.coachingtype = #{coachingtype}
+        </if>
+        <if test="fromdate != null and todate != null">
+            AND cs.date between #{fromdate} and #{todate}
+        </if>
+        <if test="playerid != null">
+            AND cs.playerid = #{playerid}
+        </if>
+        order by coachingid  desc  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="totalCount" resultType="int" parameterType="com.jui.stm.dto.CoachingDTO">
+        select count(*)
+        from coachings
+        where teamid=#{teamid}
+        <if test="coachinglevel != null">
+            and coachinglevel = #{coachinglevel}
+        </if>
+        <if test="coachingtype != null">
+            and coachingtype = #{coachingtype}
+        </if>
+        <if test="fromdate != null and todate != null">
+            AND date between #{fromdate} and #{todate}
+        </if>
+        <if test="playerid != null">
+            AND playerid = #{playerid}
+        </if>
+    </select>
+
+    <select id="selectOnerow" resultType="com.jui.stm.vo.CoachingVo" parameterType="com.jui.stm.vo.CoachingVo">
+        select *
+        from coachings
+        where coachingid = #{coachingid}
+    </select>
+
+    <update id="update" parameterType="com.jui.stm.vo.CoachingVo">
+        update coachings
+        <set>
+            <if test="playerid != null">playerid = #{playerid},</if>
+            <if test="date != null">date    = #{date},</if>
+            <if test="coachinglevel != null">coachinglevel = #{coachinglevel},</if>
+            <if test="coachingtype != null">coachingtype = #{coachingtype},</if>
+            <if test="learnscore != null">learnscore    = #{learnscore},</if>
+            <if test="solution != null">solution  = #{solution},</if>
+            <if test="cause != null">cause = #{cause},</if>
+            <if test="problem != null">problem =#{problem},</if>
+            <if test="subject != null">subject =#{subject},</if>
+            lastupdatedate=now()
+        </set>
+        where coachingid = #{coachingid}
+    </update>
+
+
+</mapper>

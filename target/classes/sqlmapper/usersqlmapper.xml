@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.UserDao">
+    <insert id="insertUser">
+        INSERT INTO users (userid,password,email,phone,creationdate,lastupdatedate,enabled,snsflag,snsname,snsprovider)
+        VALUES ( #{userid},#{password},#{email},#{phone},now(),now(),'Y',#{snsflag},#{snsname},#{snsprovider})
+        <selectKey keyProperty="userkey" resultType="Integer" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectOnerow" resultType="com.jui.stm.vo.UserVo">
+        select userkey,userid,password,email,phone,snsflag,snsname,snsprovider
+        from users where userkey=#{param1}
+    </select>
+
+    <select id="getTeamcount" resultType="int">
+      select count(*)
+      from teams
+      where userkey = (select userkey
+                       from users
+                       where userid=#{param1})
+    </select>
+
+    <select id="getuserkey" resultType="int">
+        select userkey
+        from users where userid=#{param1}
+    </select>
+
+    <select id="usercheck" resultType="int">
+        select count(*)
+        from users
+        where userid=#{param1}
+    </select>
+
+    <select id="fndUserpw" resultType="com.jui.stm.vo.UserVo" parameterType="com.jui.stm.dto.FindUserDto">
+        select email,phone,password,userid,snsflag,snsname,snsprovider
+        from  users
+        where 1=1
+        <if test='email.length() gt 0'>
+            and email = #{email}
+        </if>
+        <if test='userid.length() gt 0'>
+            and userid = #{userid}
+        </if>
+        <if test='phone.length() gt 0'>
+            AND phone = #{phone}
+        </if>
+    </select>
+
+    <select id="fndGetusercount" resultType="int" parameterType="com.jui.stm.dto.FindUserDto">
+        select count(*)
+        from  users
+        where 1=1
+        <if test='email.length() gt 0'>
+            and email = #{email}
+        </if>
+        <if test='userid.length() gt 0'>
+            and userid = #{userid}
+        </if>
+        <if test='phone.length() gt 0'>
+            AND phone = #{phone}
+        </if>
+    </select>
+
+    <select id="getSnsUser" resultType="int">
+        select count(*)
+        from  users
+        where 1=1
+        and email = #{param1}
+        and userid = #{param2}
+    </select>
+
+
+
+    <select id="selectUSer" resultType="com.jui.stm.security.PreludebUser">
+        select userid as username,
+	           password
+        from users
+        where userid=#{param1}
+    </select>
+
+    <select id="selectRole" resultType="com.jui.stm.security.Role">
+        select roll_name as name
+        from user_roles t
+        where t.userkey = (
+        select userkey
+        from users
+        where userid=#{param1})
+    </select>
+
+    <select id="emailCheck" resultType="int">
+        select count(*)
+        from users
+        where email = #{param1}
+    </select>
+
+    <insert id="insertVisit">
+        INSERT INTO visittable
+        (ip,vdate)
+        VALUES
+        (#{param1},now());
+
+    </insert>
+
+</mapper>

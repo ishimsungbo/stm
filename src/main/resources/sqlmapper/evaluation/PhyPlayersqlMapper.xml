@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.PhyplayerDao">
+
+
+       <select id="selectHeader" resultType="com.jui.stm.vo.PhysicalHeaderVo">
+         select *
+         from physical_headers
+         where teamid=#{param1}
+       </select>
+
+       <insert id="headerInsert" parameterType="com.jui.stm.vo.PhysicalHeaderVo">
+              INSERT INTO physical_headers
+              (
+              exdate,
+              teamid,
+              performer,
+              exclass,
+              creationdate,
+              description,
+              lastupdatedate)
+              VALUES
+              (
+              #{exdate},
+              #{teamid},
+              #{performer},
+              #{exclass},
+              now(),
+              #{description},
+              now()
+              );
+              <selectKey keyProperty="headerid" resultType="Integer" order="AFTER">
+                     SELECT LAST_INSERT_ID()
+              </selectKey>
+       </insert>
+
+       <insert id="lineInsert" parameterType="com.jui.stm.vo.PhysicalLineVo">
+              INSERT INTO physical_lines
+              (
+              headerid,
+              lineid,
+              playerid,
+              height,
+              weight,
+              bodyfat,
+              footsize,
+              description,
+              creationdate,
+              fifty,
+              onehundred,
+              twohundred,
+              fourhundred,
+              bodysize,
+              lastupdatedate)
+              VALUES
+              (
+              #{headerid},
+              #{lineid},
+              #{playerid},
+              #{height},
+              #{weight},
+              #{bodyfat},
+              #{footsize},
+              #{description},
+              now(),
+              #{fifty},
+              #{onehundred},
+              #{twohundred},
+              #{fourhundred},
+              #{bodysize},
+              now()
+              );
+       </insert>
+
+       <select id="selectHeaderRow" resultType="com.jui.stm.vo.PhysicalHeaderVo">
+              Select *
+              From physical_headers
+              where headerid=#{param1}
+       </select>
+
+       <select id="selectLines" resultType="com.jui.stm.vo.PhysicalLineVo">
+              select *,
+                     (
+                     select playername
+                     from players pl
+                     where pl.playerid= l.playerid
+                     ) as playername
+              from physical_lines l
+              where headerid=#{param1}
+       </select>
+
+       <update id="headerUpdate" parameterType="com.jui.stm.vo.PhysicalHeaderVo">
+              update physical_headers
+              <set>
+                     <if test="exdate != null"> exdate = #{exdate},</if>
+                     <if test="performer != null"> performer = #{performer},</if>
+                     <if test="description != null">description = #{description},</if>
+                     <if test="exclass != null">exclass = #{exclass},</if>
+                     lastupdatedate = now()
+              </set>
+              where headerid = #{headerid}
+       </update>
+
+       <update id="lineUpdate" parameterType="com.jui.stm.vo.PhysicalLineVo">
+              UPDATE physical_lines
+              SET
+              height = #{height},
+              weight = #{weight},
+              bodyfat = #{bodyfat},
+              footsize = #{footsize},
+              description = #{description},
+              fifty = #{fifty},
+              onehundred = #{onehundred},
+              twohundred = #{twohundred},
+              fourhundred = #{fourhundred},
+              bodysize = #{bodysize},
+              lastupdatedate = now()
+              WHERE lineid = #{lineid};
+       </update>
+
+       <delete id="headerDelete">
+              delete from physical_headers where headerid=#{headerid}
+       </delete>
+       <delete id="lineDelete">
+              delete from physical_lines where headerid=#{headerid}
+       </delete>
+
+</mapper>

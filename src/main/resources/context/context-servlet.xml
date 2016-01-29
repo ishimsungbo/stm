@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:util="http://www.springframework.org/schema/util"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <annotation-driven />
+
+
+    <resources mapping="/resources/**" location="/resources/" />
+
+
+
+    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--<beans:property name="order" value="2"/>-->
+        <beans:property name="prefix" value="/WEB-INF/pages/" />
+        <beans:property name="suffix" value=".jsp" />
+    </beans:bean>
+
+
+    <context:component-scan base-package="com.jui.stm" />
+
+
+    <!-- Properties Files -->
+    <beans:bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="locations">
+            <beans:list>
+                <beans:value>classpath:/jdbc.properties</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+
+    <!--로컬에서 테스트시-->
+    <beans:bean name="dataSource"
+                class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <beans:property name="url" value="jdbc:mysql://localhost:3306/tanystm" />
+        <beans:property name="username" value="root" />
+        <beans:property name="password" value="12345" />
+    </beans:bean>
+
+    <!--서버에서 테스트시-->
+    <beans:bean name="tanydataSource"
+                class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <beans:property name="url" value="jdbc:mysql://localhost:3306/tanystm" />
+        <beans:property name="username" value="tanystm" />
+        <beans:property name="password" value="ss760323" />
+    </beans:bean>
+
+
+    <!-- xml log를 사용하는 방법이며 sql문을 좀더 이쁘게 보여준다. 그런데 안됨....ㅠ.ㅠ
+        <beans:bean id="dblog" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+            <beans:constructor-arg ref="dataSource" />
+            <beans:property name="logFormatter">
+                <beans:bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                    <beans:property name="loggingType" value="MULTI_LINE" />
+                    <beans:property name="sqlPrefix" value="SQL         :  "/>
+                </beans:bean>
+            </beans:property>
+        </beans:bean>-->
+
+    <!--서버에 올릴때  REF바꾸어준다.-->
+    <beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <beans:property name="dataSource" ref="dataSource"></beans:property>
+        <beans:property name="mapperLocations"
+                        value="classpath*:sqlmapper/**/*.xml">
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <beans:constructor-arg index="0" ref="sqlSessionFactory"></beans:constructor-arg>
+    </beans:bean>
+
+
+    <beans:bean id="multipartResolver"
+                class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+        <!-- setting maximum upload size -->
+        <beans:property name="maxUploadSize" value="800000" />
+    </beans:bean>
+
+    <beans:bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+
+
+    <!--메일을 보내기 위한 bean 설정-->
+
+    <beans:bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <beans:property name="host" value="smtp.gmail.com" />
+        <beans:property name="port" value="587" />
+        <beans:property name="username" value="ishimsungbo@gmail.com" />
+        <beans:property name="password" value="ss780323s" />
+        <beans:property name="defaultEncoding" value="euc-kr"/>
+
+        <beans:property name="javaMailProperties">
+            <beans:props>
+                <beans:prop key="mail.smtp.auth">true</beans:prop>
+                <beans:prop key="mail.smtp.starttls.enable">true</beans:prop>
+            </beans:props>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="mailMail" class="com.jui.stm.common.MailMail">
+        <beans:property name="mailSender" ref="mailSender" />
+    </beans:bean>
+
+    <!--json view를 사용하기 위한 설정-->
+    <beans:bean id="viewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <beans:property name="order" value="0"></beans:property>
+    </beans:bean>
+
+    <beans:bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+        <beans:property name="contentType" value="text/html;charset=UTF-8"/>
+    </beans:bean>
+
+
+    <!--2015.12.30 에러발생시 해당 페이지로 이동시킨다.-->
+    <!--    <beans:bean id="simpleMapping" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+            <beans:property name="order" value="1" />
+            <beans:property name="exceptionMappings">
+                <beans:props>
+                    <beans:prop key="java.lang.NullPointerException">error/showNullPointExceptionMessage</beans:prop>
+                    <beans:prop key="java.sql.SQLException">error/showSQLExceptionMessage</beans:prop>
+                    <beans:prop key="defaultErrorView">error/error</beans:prop>
+                    <beans:prop key="java.lang.Exception">error/testerror</beans:prop>
+                </beans:props>
+            </beans:property>
+        </beans:bean>-->
+
+    <!--사이트버젼 넘버-->
+    <util:properties id="version" location="classpath:/version.properties" />
+
+    <!--언어정보 셋업-->
+<!--    <interceptors>
+        <beans:bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <beans:property name="paramName" value="lang"></beans:property>
+        </beans:bean>
+    </interceptors>-->
+
+    <beans:bean id="localeResolver"  class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <beans:property name="defaultLocale" value="ko" />
+    </beans:bean>
+
+    <beans:bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <beans:property name="basename" value="/WEB-INF/messages/Messages"/>
+        <beans:property name="defaultEncoding" value="UTF-8" />
+        <!-- 5초마다 업데이트 된 properties 파일을 새로 로드함-->
+        <beans:property name="cacheSeconds" value="5"/>
+    </beans:bean>
+
+    <!--페이스북 로그인을 위한 빈-->
+    <beans:bean id="connectionFactory" class="org.springframework.social.facebook.connect.FacebookConnectionFactory">
+        <beans:constructor-arg value="1710168485886563" />
+        <beans:constructor-arg value="a44763f51ceeb3c26c691a01616a97c2" />
+    </beans:bean>
+
+    <beans:bean id="oAuth2Parameters" class="org.springframework.social.oauth2.OAuth2Parameters">
+        <beans:property name="scope" value="email"/>
+        <beans:property name="redirectUri" value="http://test.stm.com:9090/oauth/callback/facebook"/>
+        <!--<beans:property name="redirectUri" value="http://stm.soccer.com:9090/oauth/callback/facebook"/>-->
+    </beans:bean>
+
+    <!--강제로그인 DI-->
+    <beans:bean id="autoLogin" class="com.jui.stm.common.AutoLogin"/>
+    
+
+</beans:beans>

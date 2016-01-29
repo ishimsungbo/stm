@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jui.stm.dao.EvaluationDao">
+    <insert id="inSertEval">
+        INSERT INTO evaluations (teamid,date,subject,location,weather,description,creationdate,lastupdatedate,evalrason,performer,exclass)
+        VALUES   ( #{teamid},#{date},#{subject},#{location},#{weather},#{description},now(),now(),#{evalrason},#{performer},#{exclass})
+        <selectKey keyProperty="evaluationid" resultType="Integer" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="evaluationCount" resultType="int" parameterType="com.jui.stm.dto.EvaluationDTO">
+        select count(*) count
+        from evaluations es
+        where teamid=#{teamid}
+        <if test="exclass != null">
+        AND exclass = #{exclass}
+        </if>
+        <if test="fromdate != null and todate != null">
+            AND es.date between #{fromdate} and #{todate}
+        </if>
+        <if test="performer != null">
+            AND es.performer like CONCAT('%', #{performer},'%')
+        </if>
+        <if test="weather != null">
+            AND es.weather = #{weather}
+        </if>
+        <if test="subject != null">
+            AND es.subject like CONCAT('%', #{subject},'%')
+        </if>
+        <if test="location != null">
+            AND es.location like CONCAT('%', #{location},'%')
+        </if>
+    </select>
+
+    <select id="evaluationList" resultType="com.jui.stm.vo.EvaluationVo" parameterType="com.jui.stm.dto.EvaluationDTO">
+        select *
+        from evaluations es
+        where teamid=#{teamid}
+        <if test="fromdate != null and todate != null">
+            AND es.date between #{fromdate} and #{todate}
+        </if>
+        <if test="performer != null">
+            AND es.performer like CONCAT('%', #{performer},'%')
+        </if>
+        <if test="weather != null">
+            AND es.weather = #{weather}
+        </if>
+        <if test="subject != null">
+            AND es.subject like CONCAT('%', #{subject},'%')
+        </if>
+        <if test="location != null">
+            AND es.location like CONCAT('%', #{location},'%')
+        </if>
+        order by evaluationid  desc  limit #{pageSize} offset #{startRowNum}
+    </select>
+
+    <select id="selectEvalRow" resultType="com.jui.stm.vo.EvaluationVo" parameterType="int">
+        select *
+        from evaluations
+        where evaluationid=#{param1}
+    </select>
+
+    <update id="updateEval" parameterType="com.jui.stm.vo.EvaluationVo">
+        update evaluations set
+        date = #{date}
+        ,location = #{location}
+        ,weather = #{weather}
+        ,description = #{description}
+        ,performer  =  #{performer}
+        ,subject  =#{subject}
+        ,evalrason = #{evalrason}
+        ,lastupdatedate = now()
+        ,exclass =#{exclass}
+        where evaluationid =  #{evaluationid}
+    </update>
+
+    <delete id="delete">
+        delete from evaluations where evaluationid=#{param1}
+    </delete>
+
+</mapper>

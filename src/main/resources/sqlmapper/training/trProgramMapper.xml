@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jui.stm.dao.TrProgramDao">
+        <insert id="insert" parameterType="com.jui.stm.vo.TrProgramVo">
+                insert into triningprograms
+                (
+                trname,trtype,fieldermen,keepermen,spacex,spacey,spaceunit,exclass,description,attacktactics,defencetactics,attackskill,defenceskill,
+                trattackobject,defenceobject,trobject,trruletime,breaktime,excuteset,youtubesource,injurypotential,importance,strength,creationdate,lastupdatedate,
+                teamid,usegraund
+                )
+                values
+                (
+                #{trname},#{trtype},#{fieldermen},#{keepermen},#{spacex},#{spacey},#{spaceunit},
+                #{exclass},#{description},#{attacktactics},#{defencetactics},#{attackskill},#{defenceskill},
+                #{trattackobject},#{defenceobject},#{trobject},#{trruletime},#{breaktime},#{excuteset},#{youtubesource},#{injurypotential},#{importance},#{strength},
+                now(),now(),
+                #{teamid},#{usegraund}
+                )
+                <selectKey keyProperty="trainingid" resultType="Integer" order="AFTER">
+                        SELECT LAST_INSERT_ID()
+                </selectKey>
+        </insert>
+
+        <select id="trProgramCount" parameterType="com.jui.stm.dto.TrainingProDTO" resultType="int">
+          select count(*)
+          from triningprograms
+          where teamid=#{teamid}
+          <if test="trname != null">
+            AND trname like CONCAT('%', #{trname},'%')
+          </if>
+          <if test="trtype != null">
+            AND trtype = #{trtype}
+          </if>
+                <if test="exclass != null">
+                        AND exclass = #{exclass}
+                </if>
+                <if test="injurypotential != null">
+                        AND injurypotential = #{injurypotential}
+                </if>
+                <if test="importance != null">
+                        AND importance = #{importance}
+                </if>
+                <if test="strength != null">
+                        AND strength = #{strength}
+                </if>
+            <if test='trruletime != null '>
+                AND trruletime >= #{trruletime}
+            </if>
+        </select>
+
+        <select id="trProgramList" parameterType="com.jui.stm.dto.TrainingProDTO" resultType="com.jui.stm.vo.TrProgramVo">
+            select a.*,
+                  (select count(*)
+                   from trjournaltimeline t
+                   where t.trainingid = a.trainingid) as trcount
+            from triningprograms a
+           where teamid=#{teamid}
+            <if test="trname != null">
+                AND trname like CONCAT('%', #{trname},'%')
+            </if>
+            <if test="trtype != null">
+                AND trtype = #{trtype}
+            </if>
+            <if test="exclass != null">
+                AND exclass = #{exclass}
+            </if>
+            <if test="injurypotential != null">
+                AND injurypotential = #{injurypotential}
+            </if>
+            <if test="importance != null">
+                AND importance = #{importance}
+            </if>
+            <if test="strength != null">
+                AND strength = #{strength}
+            </if>
+            <if test='trruletime != null '>
+                AND trruletime >= #{trruletime}
+            </if>
+            order by trainingid desc limit #{pageSize} offset #{startRowNum}
+        </select>
+
+    <select id="selectRow" parameterType="int" resultType="com.jui.stm.vo.TrProgramVo">
+        select *
+        from triningprograms
+        where trainingid = #{param1}
+    </select>
+
+    <delete id="delete">
+        delete from triningprograms where trainingid = #{param1}
+    </delete>
+
+    <select id="trProgramSelect" parameterType="int" resultType="com.jui.stm.vo.TrProVo">
+        select trname,trainingid
+        from triningprograms
+        where teamid=#{teamid}
+        order by trainingid
+    </select>
+
+</mapper>

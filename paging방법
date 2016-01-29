@@ -1,0 +1,12 @@
+* int totalrecord = 20      //총레코드
+
+int numPerPage=5          //한페이지당 보여질 글들
+
+int pagePerBlock = 3;     // <(이전10개) 1 2 3 4 5 (다음10개)>     *10이동 블럭 한다면...그런 의미 한블럭당 묶여질 페이지 수<필요할수도 없을수도>
+
+* int totalPage = 0;        //전체페이지수
+* int totalBlock=0;         //전체블럭수
+
+int nowPage  = 0;            //현재보여질 페이지
+int nowBlock = 0;              //현재보여질 블럭
+int beginPerPage;              //패이지이동시시작 글번호
