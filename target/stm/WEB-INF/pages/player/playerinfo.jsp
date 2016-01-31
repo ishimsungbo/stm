@@ -20,45 +20,6 @@
 
 </head>
 
-<style>
-  body{
-    position: relative;
-    background: #fff;
-    margin: 0 auto;
-    padding: 90px 0 0 0;
-    width: 960px;
-  }
-
-  .highlight {
-    padding: 9px 14px;
-    margin-bottom: 14px;
-    background-color: #f8f8f8;
-    border: 1px solid #e1e1e8;
-    border-radius: 4px;
-
-  }
-
-  .highlight_white {
-    padding: 9px 14px;
-    margin-bottom: 14px;
-    border: 1px solid #e1e1e8;
-    border-radius: 4px;
-  }
-
-  .boxcomplex{
-    margin: 5px 5px 5px 5px;
-    border: 1px solid #e1e1e8;
-    border-radius: 5px;
-  }
-
-
-  .page-subject {
-    padding-bottom: 9px;
-    margin: 10px auto 20px auto;
-    border-bottom: 2px solid #eee;
-  }
-</style>
-
 <script>
   $(document).ready(function() {
 
@@ -233,7 +194,7 @@
   }
 </script>
 
-<body>
+<body class="stmbody">
 <header>
   <%@ include file="../headerpage.jsp"%>
 </header>

@@ -36,4 +36,7 @@ public interface UserDao {
 
     public void insertVisit(String ip);
 
+    //유저아이디 찾기
+    public FindUserDto findUserid(String email);
+
 }

@@ -445,14 +445,10 @@
         </div>
 
           <%--분기점--%>
-        <div class="form-group">
-          <div class="col-md-2"></div>
-          <div class="col-md-3">
+
             <input type="submit" value="등록" class="btn btn-default" style="width: 100px">
             <input type="reset" value="지우기" class="btn btn-default" style="width: 100px">
-          </div>
-          <div class="col-md-7"></div>
-        </div>
+
       </div>
     </spring:form>
   </section>

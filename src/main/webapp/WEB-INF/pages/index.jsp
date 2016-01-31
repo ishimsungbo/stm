@@ -589,7 +589,7 @@
                                     {title: "창의성", value: data[0].creativity, max: 10}
                                 ];
 
-                               c4 = ichart("#chart-eval", {
+                                c4 = ichart("#chart-eval", {
                                     width: 900,
                                     height: 400,
                                     padding: 0,
@@ -710,6 +710,8 @@
 <body class="stmbody">
 
 
+
+
 <header>
     <%@ include file="headerpage.jsp"%>
 </header>
@@ -797,7 +799,7 @@
                                             <th class="text-center">승리</th>
                                             <th class="text-center">패배</th>
                                             <th class="text-center">무승부</th>
-                                            <th class="text-center">득정</th>
+                                            <th class="text-center">득점</th>
                                             <th class="text-center">실점</th>
                                             <tbody>
                                             </tbody>
@@ -832,7 +834,7 @@
                                         <th class="text-center">승리</th>
                                         <th class="text-center">패배</th>
                                         <th class="text-center">무승부</th>
-                                        <th class="text-center">득정</th>
+                                        <th class="text-center">득점</th>
                                         <th class="text-center">실점</th>
                                         <tbody>
                                         </tbody>
@@ -913,17 +915,18 @@
 
                     <div class="form-group">
                         <div class="col-md-2"></div>
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                             <input type="submit"    class="btn btn-primary" value="로그인" style="width: 95px"/>
                             <a href="userjoin"     class="btn btn-primary" style="width: 95px">회원가입</a>
-                            <a href="/user/findinfo"     class="btn btn-primary" style="width: 95px">ID/PW 찾기</a>
+                            <a style="position: relative" href="/user/accountfind">아이디찾기</a>/
+                            <a style="position: relative" href="/user/passwordreset">비밀번호재설정</a>
                         </div>
                         <div class="col-md-2"></div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-md-3 text-right">
-                            <h5>SNS로 회원가입/로그인</h5>
+                            SNS로 회원가입/로그인
                         </div>
                         <div class="col-md-4">
                             <a href="/oauth/login?snsname=naver"><img src="/resources/systemimg/naver.png" width="50" height="50"></a>
@@ -936,8 +939,6 @@
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
                 </form>
-
-                </div>
             </section>
         </c:when>
 
@@ -945,10 +946,10 @@
 </article>
 
 
+
 <footer class="stm-footer">
     <%@ include file="footer.jsp"%>
 </footer>
-
 
 </body>
 </html>

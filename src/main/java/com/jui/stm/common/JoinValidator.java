@@ -1,6 +1,5 @@
 package com.jui.stm.common;
 
-import com.jui.stm.controller.CoachingController;
 import com.jui.stm.dao.UserDao;
 import com.jui.stm.vo.UserVo;
 import org.apache.ibatis.session.SqlSession;
@@ -22,9 +21,7 @@ public class JoinValidator implements Validator{
         this.sqlSession = sqlSession;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(CoachingController.class);
-
-
+    private static final Logger logger = LoggerFactory.getLogger(JoinValidator.class);
 
     @Override
     public boolean supports(Class aClass) {

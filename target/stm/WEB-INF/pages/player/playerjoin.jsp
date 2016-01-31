@@ -242,7 +242,7 @@
 </article>
 
 
-<footer class="highlight" style="margin-top: 10px">
+<footer class="stm-footer">
   <%@ include file="../footer.jsp"%>
 </footer>
 

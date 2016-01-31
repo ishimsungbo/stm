@@ -103,7 +103,11 @@
         (ip,vdate)
         VALUES
         (#{param1},now());
-
     </insert>
+
+
+    <select id="findUserid" resultType="com.jui.stm.dto.FindUserDto">
+        select userid,snsprovider,creationdate from users where email=#{param1}
+    </select>
 
 </mapper>

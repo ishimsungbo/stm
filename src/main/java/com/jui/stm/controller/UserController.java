@@ -1,9 +1,12 @@
 package com.jui.stm.controller;
 
 import com.jui.stm.common.AutoLogin;
+import com.jui.stm.common.ConfirmValidator;
 import com.jui.stm.common.JoinValidator;
+import com.jui.stm.common.PwdfindValidator;
 import com.jui.stm.dao.RolleDao;
 import com.jui.stm.dao.UserDao;
+import com.jui.stm.dto.FindUserDto;
 import com.jui.stm.vo.UserVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -19,10 +22,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Random;
 
 /**
  * Created by sungbo on 2015-10-12.
@@ -82,64 +87,14 @@ public class UserController {
         }
 
 
-        model.addAttribute("teamCount",teamCount);
+        model.addAttribute("teamCount", teamCount);
         model.addAttribute("snsName", snsName);
-        model.addAttribute("userid",userid);
+        model.addAttribute("userid", userid);
         model.addAttribute("snsusername",snsusername);
         return "/user/userjoin";
     }
 
-    @RequestMapping(value="/insert", method= RequestMethod.POST)
-    public String doJoin(Model model,
-                         UserVo userVo,
-                         BindingResult bindingResult,
-                         HttpServletRequest request){
 
-        logger.info("몬제 걸리지비?");
-
-        JoinValidator joinValidator = new JoinValidator();
-        joinValidator.setSqlSession(sqlSession); //프로그램 흐름상 먼저 sqlSession이 등록되어야 한다.
-        joinValidator.validate(userVo,bindingResult);
-
-        if(bindingResult.hasErrors()){
-
-            model.addAttribute("userVo", userVo);
-
-            if(userVo.getSnsflag().equals("Y")){
-                return "/user/snsUserJoin";
-            }else if(userVo.getSnsflag().equals("N")){
-                    return "/user/userjoin";
-            }
-            return "";
-
-        } else {
-
-            UserDao userDao = sqlSession.getMapper(UserDao.class);
-            RolleDao rolleDao = sqlSession.getMapper(RolleDao.class);
-
-            //올바르게 정보를 입력했다면...
-            StandardPasswordEncoder encoder = new StandardPasswordEncoder();
-            String secretPwd = encoder.encode(userVo.getPassword());
-
-            //password 암호화 작업
-            userVo.setPassword(secretPwd);
-
-            userDao.insertUser(userVo);
-            rolleDao.insertRolle("ROLE_GUEST", userVo.getUserkey(), "Y");
-
-            //씨큐리티 로그인 작업 해주기.
-            autoLogin.setUserid(userVo.getUserid());
-            autoLogin.setUserpwd(userVo.getPassword());
-
-            autoLogin.setRequest(request);
-            autoLogin.setSqlSession(sqlSession);
-            autoLogin.setAuthentication(autoLogin.getRequest(),autoLogin.getUserid(),autoLogin.getUserpwd());
-
-
-            model.addAttribute("userkey", userVo.getUserkey());
-            return "redirect:/";
-        }
-    }
 
     //사용안함.insert으로 옮김.. 그리고 sns은 따로 페이지를 만듬.
     @RequestMapping(value = "userdbjoin",method = RequestMethod.POST)
@@ -156,13 +111,6 @@ public class UserController {
         }
 
         UserDao userDao = sqlSession.getMapper(UserDao.class);
-
-/*        int usercount =  userDao.usercheck(userVo.getUserid());
-
-        if(usercount > 0){
-            System.out.println("값은  : "+usercount);
-          return "redirect:" +"/userjoin?fail=idcheck";
-        }*/
 
         StandardPasswordEncoder encoder = new StandardPasswordEncoder();
         String secretPwd = encoder.encode(userVo.getPassword());
@@ -213,38 +161,164 @@ public class UserController {
         message.setText(content);
         mailSender.send(message);
 
-
         return "/user/joinsucces";
     }
 
-    @RequestMapping("user/findinfo")
-    public String findinfo(@RequestParam(required = false) String getflag,
-                           Model model
+    @RequestMapping("user/accountfind")
+    public String acctFind(Model model
                            ){
-        // !값이 있다면 유저는 처음 페이지를 실행했다.
 
-
-        model.addAttribute("getflag",getflag);
-
-        return "/user/findinfo";
+        return "user/accountfind";
     }
 
-    @RequestMapping(value = "find", method = RequestMethod.GET)
-    public String sendRequestUser()
-    {
+    @RequestMapping("user/passwordreset")
+    public String pwdReset(Model model
+    ){
+        return "user/passwordreset";
+    }
+
+    @RequestMapping("user/confirmpwd")
+    public String confirmPwd(){
 
 
-        /*
-        SimpleMailMessage message = new SimpleMailMessage();
+        return "/user/confirmpwd";
+    }
 
-        message.setFrom("stmadmin@stm.com");
-        message.setTo(userVo.getEmail());
-        message.setSubject(subject);
-        message.setText(content);
-        mailSender.send(message);
-        */
+    //비밀번호를 재설정하는 컨트롤러
+    @RequestMapping("user/lastpwdcheck")
+    public String lastpwdcheck(         Model model,
+                                        FindUserDto findUserDto ,
+                                        BindingResult bindingResult,
+                                        HttpSession session){
 
-        return "redirect:" +"/";
+        ConfirmValidator confirmValidator = new ConfirmValidator();
+        confirmValidator.setSqlSession(sqlSession);
+        confirmValidator.setHttpSession(session);
+        confirmValidator.validate(findUserDto,bindingResult);
+
+        if(bindingResult.hasErrors()){
+            model.addAttribute("findUserDto", findUserDto);
+            logger.info("밸리데이션 검증에 걸렸습니다 "+bindingResult.getFieldError().getDefaultMessage());
+            return "/user/confirmpwd";
+        } else {
+            //비밀번호를 새로 업데이트 해준다.
+
+            return "redirect:" +"/";
+        }
+
+    }
+
+    @RequestMapping(value = "user/pwdreset", method= RequestMethod.POST)
+    public String pwdReset(
+         Model model,
+         FindUserDto findUserDto ,
+         BindingResult bindingResult,
+         HttpSession session
+    ) {
+
+        PwdfindValidator pwdfindValidator = new PwdfindValidator();
+        pwdfindValidator.setSqlSession(sqlSession);
+        pwdfindValidator.validate(findUserDto,bindingResult);
+
+        if(bindingResult.hasErrors()){
+            model.addAttribute("findUserDto", findUserDto);
+            logger.info("걸렸습니다. 밸리데이션에...");
+            return "/user/passwordreset";
+        } else {
+
+            Random rd = new Random();
+
+            String random = String.valueOf(rd.nextInt()*-1);
+
+            String subject = "Sport Team Manager Soccer 비밀번호재설정 안내메일입니다";
+
+            String content = "인증번호는 ["+ random +"] 입니다.";
+
+            session.setAttribute("emailrandomnum",random);
+
+            SimpleMailMessage message = new SimpleMailMessage();
+
+            message.setFrom("stmadmin@stm.com");
+            message.setTo(findUserDto.getEmail());
+            message.setSubject(subject);
+            message.setText(content);
+            mailSender.send(message);
+
+            return "/user/confirmpwd";
+        }
+
+    }
+
+    @RequestMapping(value="/insert", method= RequestMethod.POST)
+    public String doJoin(Model model,
+                         UserVo userVo,
+                         BindingResult bindingResult,
+                         HttpServletRequest request){
+
+        logger.info("몬제 걸리지비?");
+
+        JoinValidator joinValidator = new JoinValidator();
+        joinValidator.setSqlSession(sqlSession); //프로그램 흐름상 먼저 sqlSession이 등록되어야 한다.
+        joinValidator.validate(userVo, bindingResult);
+
+        if(bindingResult.hasErrors()){
+
+            model.addAttribute("userVo", userVo);
+
+            if(userVo.getSnsflag().equals("Y")){
+                return "/user/snsUserJoin";
+            }else if(userVo.getSnsflag().equals("N")){
+                return "/user/userjoin";
+            }
+            return "";
+
+        } else {
+
+            UserDao userDao = sqlSession.getMapper(UserDao.class);
+            RolleDao rolleDao = sqlSession.getMapper(RolleDao.class);
+
+            //올바르게 정보를 입력했다면...
+            StandardPasswordEncoder encoder = new StandardPasswordEncoder();
+            String secretPwd = encoder.encode(userVo.getPassword());
+
+            //password 암호화 작업
+            userVo.setPassword(secretPwd);
+
+            userDao.insertUser(userVo);
+            rolleDao.insertRolle("ROLE_GUEST", userVo.getUserkey(), "Y");
+
+            //씨큐리티 로그인 작업 해주기.
+            autoLogin.setUserid(userVo.getUserid());
+            autoLogin.setUserpwd(userVo.getPassword());
+
+            autoLogin.setRequest(request);
+            autoLogin.setSqlSession(sqlSession);
+            autoLogin.setAuthentication(autoLogin.getRequest(),autoLogin.getUserid(),autoLogin.getUserpwd());
+
+
+            model.addAttribute("userkey", userVo.getUserkey());
+            return "redirect:/";
+        }
+    }
+
+    //아이디가 서버에 존재하는지 확인한다
+    @RequestMapping(value= "user/finduseid", method= RequestMethod.GET)
+    public @ResponseBody
+    FindUserDto evalplayer(
+            @RequestParam("email") String email
+    )  {
+        UserDao dao = sqlSession.getMapper(UserDao.class);
+
+        try{
+            FindUserDto dto = dao.findUserid(email);
+            logger.info("아이디가 존재합니다.");
+            return dto;
+        }catch(Exception e){
+            FindUserDto dto = new FindUserDto();
+            logger.info("아이디가 존재하지 않습니다");
+            return dto;
+        }
+
     }
 
 

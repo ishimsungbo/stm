@@ -1,14 +1,8 @@
 .stmbody{
-    /*width: 960px;*/
     position: relative;
     background: #fff;
     margin: 0 auto;
     padding: 90px 0 0 0;
-}
-
-article{
-    margin: 0 auto;
-    position: relative;
     width: 960px;
 }
 
@@ -32,25 +26,14 @@ article{
 }
 
 .stm-footer {
-    clear:both;
-    margin:0 auto;
     position: relative;
     right: 0;
     left:  0;
     bottom: 0;
+    background-color: #f0f0f0; /*#f666*/
     border: 1px solid #e1e1e8;
     border-radius: 4px;
-    color: #777;
-    height: 170px;
-    background-color: #2f353e;
-    background-image: none;
-}
-
-.stm-footerline{
-    margin-top: 18px !important;
-    margin-bottom: 18px !important;
-    height: 1px !important;
-    background: #414853 !important;
+    height: 80px;
 }
 
 .highlight_white {

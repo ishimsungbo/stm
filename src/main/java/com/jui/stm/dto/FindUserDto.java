@@ -1,5 +1,8 @@
 package com.jui.stm.dto;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by sungbo on 2015-11-30.
  */
@@ -9,16 +12,69 @@ public class FindUserDto {
     private String email;
     private String phone;
     private String password;
-    private int     pageflag;
+    private String snsprovider;
+    private int    pageflag;
+    private Date   creationdate;
+    private String joindate;
+    private String emailchecknum;
+    private String pwdclone;
+
+
+
+    public String getJoindate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        joindate = dateFormat.format(creationdate);
+        return joindate;
+    }
+
+    public void setJoindate(String joindate) {
+        this.joindate = joindate;
+    }
 
     public FindUserDto(){}
 
-    public FindUserDto(String userid, String email, String phone, String password, int pageflag) {
+    public FindUserDto(String userid, String email, String phone, String password, String snsprovider, int pageflag, Date creationdate, String emailchecknum, String pwdclone) {
         this.userid = userid;
         this.email = email;
         this.phone = phone;
         this.password = password;
+        this.snsprovider = snsprovider;
         this.pageflag = pageflag;
+        this.creationdate = creationdate;
+        this.emailchecknum = emailchecknum;
+        this.pwdclone = pwdclone;
+    }
+
+    public String getEmailchecknum() {
+        return emailchecknum;
+    }
+
+    public void setEmailchecknum(String emailchecknum) {
+        this.emailchecknum = emailchecknum;
+    }
+
+    public String getPwdclone() {
+        return pwdclone;
+    }
+
+    public void setPwdclone(String pwdclone) {
+        this.pwdclone = pwdclone;
+    }
+
+    public Date getCreationdate() {
+        return creationdate;
+    }
+
+    public void setCreationdate(Date creationdate) {
+        this.creationdate = creationdate;
+    }
+
+    public String getSnsprovider() {
+        return snsprovider;
+    }
+
+    public void setSnsprovider(String snsprovider) {
+        this.snsprovider = snsprovider;
     }
 
     public String getUserid() {

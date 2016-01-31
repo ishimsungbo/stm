@@ -47,6 +47,8 @@
   <%@ include file="../headerpage.jsp"%>
 </header>
 
+
+
 <article>
   <section class="page-subject">
     <h3>코칭정보</h3>
@@ -204,9 +206,9 @@
 
 </article>
 
-
-<footer class="highlight" style="margin-top: 20px">
+<footer class="stm-footer">
   <%@ include file="../footer.jsp"%>
 </footer>
+
 </body>
 </html>
