@@ -16,9 +16,6 @@
     <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/dao/UserDao.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/dto/CoachingDTO.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/dto/PagingDTO.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/test/DateCastingTest.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/test/FxTest.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/test/TestController.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/vo/EvaluationPlayerList.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/vo/EvaluationPlayerVo.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/jui/stm/vo/EvaluationVo.java" charset="UTF-8" />

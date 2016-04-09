@@ -37,7 +37,7 @@
     </select>
 
     <select id="fndUserpw" resultType="com.jui.stm.vo.UserVo" parameterType="com.jui.stm.dto.FindUserDto">
-        select email,phone,password,userid,snsflag,snsname,snsprovider
+        select email,phone,password,userid,snsflag,snsname,snsprovider,userkey
         from  users
         where 1=1
         <if test='email.length() gt 0'>
@@ -108,6 +108,24 @@
 
     <select id="findUserid" resultType="com.jui.stm.dto.FindUserDto">
         select userid,snsprovider,creationdate from users where email=#{param1}
+    </select>
+
+    <select id="selectUser" resultType="com.jui.stm.vo.UserVo">
+        select *
+        from users
+    </select>
+
+    <update id="updateUser" parameterType="com.jui.stm.vo.UserVo">
+        update users set
+        password =  #{password}
+        where userkey=#{userkey}
+    </update>
+
+    <select id="getUserkey" resultType="int">
+        select userkey
+        from users
+        where email=#{param1}
+        AND   userid=#{param2}
     </select>
 
 </mapper>

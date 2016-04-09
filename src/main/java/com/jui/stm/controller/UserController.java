@@ -178,9 +178,9 @@ public class UserController {
     }
 
     @RequestMapping("user/confirmpwd")
-    public String confirmPwd(){
-
-
+    public String confirmPwd(FindUserDto findUserDto,
+                             Model model){
+        model.addAttribute("findUserDto",findUserDto);
         return "/user/confirmpwd";
     }
 
@@ -202,6 +202,24 @@ public class UserController {
             return "/user/confirmpwd";
         } else {
             //비밀번호를 새로 업데이트 해준다.
+
+            UserDao userDao = sqlSession.getMapper(UserDao.class);
+
+            //logger.info("아이디:"+findUserDto.getUserid());
+            //logger.info("이메일:"+findUserDto.getEmail());
+
+            UserVo vo = new UserVo();
+            int userKey = userDao.getUserkey(findUserDto.getEmail(),findUserDto.getUserid());
+
+            //logger.info("유저키:"+userKey);
+
+            StandardPasswordEncoder encoder = new StandardPasswordEncoder();
+            String secretPwd = encoder.encode(findUserDto.getPassword());
+
+            vo.setUserkey(userKey);
+            vo.setPassword(secretPwd);
+
+            userDao.updateUser(vo);
 
             return "redirect:" +"/";
         }

@@ -26,9 +26,6 @@ public class UploadFunction {
             stream.write(bytes);
             stream.close();
 
-            System.out.println("file path : "+dir+ File.separator + filename);
-            System.out.println("file >>>>> : "+rootPath );
-
         } catch (Exception e) {
             e.printStackTrace();
         }

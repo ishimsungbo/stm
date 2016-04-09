@@ -7,6 +7,7 @@ import com.jui.stm.query.vo.PlayerQueryListVo;
 import com.jui.stm.vo.PlayerGameVo;
 import com.jui.stm.vo.PlayerVo;
 import com.jui.stm.vo.TrJrPlayerVo;
+import com.jui.stm.vo.UserVo;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -143,4 +145,17 @@ public class AjaxController {
         return PlayerVo;
     }
 
+
+    //http://192.168.0.43:9090/stm/users 안드로이드에서 접근 하면 됩니다.
+    @RequestMapping(value= "stm/users")
+    public @ResponseBody
+    ArrayList<UserVo> User(){
+
+        UserDao userDao = sqlSession.getMapper(UserDao.class);
+        ArrayList<UserVo> userVo = userDao.selectUser();
+
+        //JSONArray jsonArray = new JSONArray();
+
+        return userVo;
+    }
 }

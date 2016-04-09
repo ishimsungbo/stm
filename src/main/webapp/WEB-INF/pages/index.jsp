@@ -730,9 +730,15 @@
                                 </a>
                             </div>
                             <div class="col-md-6 text-center">
-                                <a href="/team/teamrequest">
+                                <a href="">
                                     <img id="teamreq"  data-toggle="tooltip" data-placement="top" title="팀의 소속되길 요청합니다"
                                          src="/resources/systemimg/teamreq.svg" width="300px" height="300px"/>
+                                <script>
+                                    $('#teamreq').click(function(){
+                                                alert('팀원 요청 기능은 준비 중입니다');
+                                            }
+                                    )
+                                </script>
                                 </a>
                             </div>
                         </div>
@@ -929,9 +935,9 @@
                             SNS로 회원가입/로그인
                         </div>
                         <div class="col-md-4">
-                            <a href="/oauth/login?snsname=naver"><img src="/resources/systemimg/naver.png" width="50" height="50"></a>
+    <%--                        <a href="/oauth/login?snsname=naver"><img src="/resources/systemimg/naver.png" width="50" height="50"></a>
+                            <a href="/oauth/login?snsname=twitter"><img src="/resources/systemimg/TwitterLogo.png" width="50" height="50"></a>--%>
                             <a href="/oauth/login?snsname=kakao"><img src="/resources/systemimg/kakaolink_btn.png" width="50" height="50"></a>
-                            <a href="/oauth/login?snsname=twitter"><img src="/resources/systemimg/TwitterLogo.png" width="50" height="50"></a>
                             <a href="/oauth/login?snsname=facebook"><img src="/resources/systemimg/facebook.png" width="50" height="50"></a>
                         </div>
                         <div class="col-md-5"></div>

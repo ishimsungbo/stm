@@ -74,6 +74,21 @@
 
   <section class="highlight_white">
     <form:form id="frm" commandName="findUserDto" action="lastpwdcheck" cssClass="form-horizontal">
+
+      <div class="form-group">
+        <label for="emailchecknum" class="col-md-2 control-label">아이디</label>
+        <div class="col-md-4">
+          <input class="form-control" type="text" name="userid" value="${findUserDto.userid}" id="userid">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="emailchecknum" class="col-md-2 control-label">이메일주소</label>
+        <div class="col-md-4">
+          <input class="form-control" type="text" name="email" value="${findUserDto.email}" id="email">
+        </div>
+      </div>
+
       <div class="form-group">
         <label for="emailchecknum" class="col-md-2 control-label">인증번호</label>
         <div class="col-md-4">

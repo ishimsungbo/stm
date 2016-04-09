@@ -5,6 +5,7 @@ import com.jui.stm.security.PreludebUser;
 import com.jui.stm.security.Role;
 import com.jui.stm.vo.UserVo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,5 +39,15 @@ public interface UserDao {
 
     //유저아이디 찾기
     public FindUserDto findUserid(String email);
+
+    //유저리스트 관리자 전용
+    public ArrayList<UserVo> selectUser();
+
+    //비밀번호 재설정
+    public void updateUser(UserVo userVo);
+
+    //비밀번호를 변경하기 위한 유저키가져오기
+
+    public int getUserkey(String email, String userid);
 
 }
